@@ -13,6 +13,6 @@ The full competition submission can be found here: https://devpost.com/software/
 ## Use
 
 ## Team 
-Team Captain: sinfathisar19
-Developer: icantiemyshoe
-Team Mascot: j_urby
+- Team Captain: sinfathisar19
+- Developer: icantiemyshoe
+- Team Mascot: j_urby
