@@ -6,11 +6,37 @@ The full competition submission can be found here: https://devpost.com/software/
 
 
 ## Install
-### Requirments 
+### Requirements 
 * OBS (or other streaming content manager that can use python)
 * Python3
+* Twitch Affiliate or Partner status
+* Twitch Channel Points enabled
 
 ## Use
+* The steamer will be given control of which Features to turn on/off, the channel point price per redemption, the ability to 
+* All Feature durations and costs can be determined by the Streamer (or Moderators)
+* Feature duration and cost scales with points spent for redemption
+* Feature redemptions can be given a global and user-level cooldown rate. Global would affect all users (to include the streamer and moderators), user-level would affect only the individual user who made the initial redemption
+* Redeemed points will be deducted from the redeeming user following a confirmation on behalf of the Streamer or moderators; points may be refunded if the redemption is declined
+* 
+
+## User Features
+* Screen Flip - Rotate the Streamer's screen horizontally, vertically, or both for a period of time (minimum value (seconds) | maximum value (seconds))
+* Grey Grumpkin - Change the Streamer's display to gray scale for a period of time (minimum value (seconds) | maximum value (seconds))
+* Brightness Blast - Increase the brightness of the Streamer's display for a period of time (minimum value (seconds) | maximum value (seconds))
+* Crazy Keys - Switch the ASDW keys to be bound to UIOK where U is "right", I is "down", O is "left", and K is "up" for a period of time (minimum value (seconds) | maximum value (seconds))
+* Camera Whirl - REQUIRES CAMERA OVERLAY ENABLED - Change the orientation and position of the Streamer's camera [Rotate (Left, Right), Mirror, Flip, Spin] for a period of time (minimum value (seconds) | maximum value (seconds))
+* Mic Mute - Mute the Streamer's microphone for a period of time (minimum value (seconds) | maximum value (seconds))
+
+### Possible Features (Unclear how difficulty these are to implement)
+* Difficulty Diversion - Change the difficulty level of the game being played (no more than 2 difficulty levels from the Streamer's current difficulty) for a period of time (minimum value (seconds) | maximum value (seconds))
+
+
+
+## Super User Features (Streamer and/or Moderators)
+* Channel point redemption feed present (module or other integration) within OBS (STREAMER) - The redemption feed will allow the Streamer to approve/decline redemptions from within OBS
+* Channel Point redemption overlay - Allow the Streamer to add an overlay to display the most recent redemption and redeeming user
+
 
 ## Team 
 - Team Captain: sinfathisar19
