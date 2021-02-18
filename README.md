@@ -6,11 +6,32 @@ The full competition submission can be found here: https://devpost.com/software/
 
 
 ## Install
+
+
 ### Requirements 
 * OBS (or other streaming content manager that can use python)
 * Python3
 * Twitch Affiliate or Partner status
 * Twitch Channel Points enabled
+
+### Dependancy install
+Recommended using virtual environment
+
+##### Linux install
+```sh
+pip install virtualenv
+python -m venv ./venv
+./venv/source/activate
+pip install -r requirements.txt
+```
+
+##### Windows install
+```ps1
+pip install virtualenv
+python -m venv ./venv
+./venv/Scripts/activate
+pip install -r requirements.txt
+```
 
 ## Use
 * The steamer will be given control of which Features to turn on/off, the channel point price per redemption, the ability to 
@@ -37,6 +58,12 @@ The full competition submission can be found here: https://devpost.com/software/
 * Channel point redemption feed present (module or other integration) within OBS (STREAMER) - The redemption feed will allow the Streamer to approve/decline redemptions from within OBS
 * Channel Point redemption overlay - Allow the Streamer to add an overlay to display the most recent redemption and redeeming user
 
+
+## Run the program
+Can be run offline to sync rewards with live stream using API
+```sh
+python main.py
+```
 
 ## Team 
 - Team Captain: sinfathisar19

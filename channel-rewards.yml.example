@@ -1,6 +1,32 @@
+broadcasterId: <what is this>
 clientId: <generated in the twitch developer console>
 clientSecrets: <generated in the twitch developer console>
 AccessToken: 
 
 standardRedemption:
+  - reward_title: Flip Screen
+    reward_number: 1
+    reward_points_redemption:
+    functionality_class:
+    functionality_args:
+  - reward_title: Grey Grumpkin
+    reward_number: 2
+    reward_points_redemption:
+    functionality_class:
+    functionality_args:
+  - reward_title: Crazy Keys
+    reward_number: 3
+    reward_points_redemption:
+    functionality_class:
+    functionality_args:
+  - reward_title: Just shut up
+    reward_number: 4
+    reward_points_redemption:
+    functionality_class:
+    functionality_args:
+  - reward_title: Pure Chaos
+    reward_number: 5
+    reward_points_redemption: 1000
+    functionality_class:
+    functionality_args:
   
