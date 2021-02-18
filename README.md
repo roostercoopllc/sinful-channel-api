@@ -16,3 +16,6 @@ The full competition submission can be found here: https://devpost.com/software/
 - Team Captain: sinfathisar19
 - Developer: icantiemyshoe
 - Team Mascot: j_urby
+
+## Special Thanks to:
+- Teekeks: https://github.com/Teekeks/pyTwitchAPI
