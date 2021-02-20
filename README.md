@@ -49,7 +49,7 @@ pip install -r requirements.txt
 * Camera Whirl - REQUIRES CAMERA OVERLAY ENABLED - Change the orientation and position of the Streamer's camera [Rotate (Left, Right), Mirror, Flip, Spin] for a period of time (minimum value (seconds) | maximum value (seconds))
 * Mic Mute - Mute the Streamer's microphone for a period of time (minimum value (seconds) | maximum value (seconds))
 
-### Possible Features (Unclear how difficulty these are to implement)
+### Possible Features (Unclear how difficult these are to implement)
 * Difficulty Diversion - Change the difficulty level of the game being played (no more than 2 difficulty levels from the Streamer's current difficulty) for a period of time (minimum value (seconds) | maximum value (seconds))
 
 
