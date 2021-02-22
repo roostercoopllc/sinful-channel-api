@@ -1,7 +1,11 @@
 ## Inspiration
 Remember playing with your friends and they were beating you...what did you do? Tried to get even and win by messing with their controller (unplugging it), standing in front of their side of the tv, switching off the internet, etc. This integration allows you to better mess with your favorite streamers while they're doing what they do best.
 
-**Future:** Help your friends make your streamer's experience far more challenging. Work together to block streamer's abilities. But, this comes with a cost - it's a gamble for your points every time!
+**Future:** Help your friends make your streamer's experience far more challenging. Work together to block streamer's abilities. But, this comes with a cost - it's a gamble for your points every time! 
+
+Have a stream of chaos where all redemption costs and cooldowns are reduced. Your viewers will go wild making you lose your mind.
+
+Control your streamer's lighting on their keyboard, their nanoleaf array or other RGB lighting setup.
 
 ## What it does
 
