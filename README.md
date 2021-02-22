@@ -23,7 +23,7 @@ pip install virtualenv
 python -m venv ./venv
 ./venv/Scripts/activate
 pip install -r requirements.txt
-# Need to perform post install
+# Need to perform post install (maybe)
 python ./venv/Scripts/pywin32_postinstall.py -install
 ```
 
@@ -74,3 +74,5 @@ python main.py
 
 ## Special Thanks to:
 - Teekeks: https://github.com/Teekeks/pyTwitchAPI
+- Danny-Burrows: https://github.com/danny-burrows/rotate-screen
+- Boppreh: https://github.com/boppreh/keyboard

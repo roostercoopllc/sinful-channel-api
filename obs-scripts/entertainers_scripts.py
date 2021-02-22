@@ -2,7 +2,7 @@ import time
 import rotatescreen
 import keyboard
 
-def do_a_barrel_roll():
+def camera_whirl():
     screen = rotatescreen.get_primary_display()
     start_pos = screen.current_orientation
 
