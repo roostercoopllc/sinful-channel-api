@@ -17,19 +17,21 @@ The full competition submission can be found here: https://devpost.com/software/
 ### Dependancy install
 Recommended using virtual environment
 
-##### Linux install
-```sh
-pip install virtualenv
-python -m venv ./venv
-./venv/source/activate
-pip install -r requirements.txt
-```
-
 ##### Windows install
 ```ps1
 pip install virtualenv
 python -m venv ./venv
 ./venv/Scripts/activate
+pip install -r requirements.txt
+# Need to perform post install
+python ./venv/Scripts/pywin32_postinstall.py -install
+```
+
+##### Linux install
+```sh
+pip install virtualenv
+python -m venv ./venv
+./venv/source/activate
 pip install -r requirements.txt
 ```
 

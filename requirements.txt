@@ -1,4 +1,6 @@
-pypiwin32
+pywin32
+rotate-screen
+keyboard
 pyyaml
 requests
 twitchAPI
