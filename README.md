@@ -76,3 +76,5 @@ python main.py
 - Teekeks: https://github.com/Teekeks/pyTwitchAPI
 - Danny-Burrows: https://github.com/danny-burrows/rotate-screen
 - Boppreh: https://github.com/boppreh/keyboard
+- UpgradeQ: https://github.com/upgradeQ/OBS-Studio-Python-Scripting-Cheatsheet-obspython-Examples-of-API#docs-and-code-examples 
+- twitchApp TokenGenerator: https://twitchapps.com/tokengen/

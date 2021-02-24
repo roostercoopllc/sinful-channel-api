@@ -4,3 +4,6 @@ keyboard
 pyyaml
 requests
 twitchAPI
+wmi
+debugpy
+python-twitch-client

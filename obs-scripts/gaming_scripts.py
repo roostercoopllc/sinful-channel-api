@@ -15,7 +15,7 @@ def screen_flip(duration, angle):
 def grey_grumpkin():
     pass
 
-def brightness_blass():
+def brightness_blast():
     pass
 
 def crazy_keys(duration):
