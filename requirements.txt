@@ -1,9 +1,7 @@
-pywin32
-rotate-screen
-keyboard
 pyyaml
 requests
-twitchAPI
-wmi
-debugpy
+pypiwin32
+rotate-screen
+keyboard
 python-twitch-client
+debugpy

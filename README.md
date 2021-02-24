@@ -15,24 +15,22 @@ The full competition submission can be found here: https://devpost.com/software/
 * Twitch Channel Points enabled
 
 ### Dependancy install
-Recommended using virtual environment
+Fill this out Derek
+```ps1
+```
+
+Move obspython from the obs-studios directory into your python 3.6 path
+```sh
+```
 
 ##### Windows install
 ```ps1
 pip install virtualenv
-python -m venv ./venv
+python --python=<python path> venv-m venv ./venv
 ./venv/Scripts/activate
 pip install -r requirements.txt
 # Need to perform post install (maybe)
 python ./venv/Scripts/pywin32_postinstall.py -install
-```
-
-##### Linux install
-```sh
-pip install virtualenv
-python -m venv ./venv
-./venv/source/activate
-pip install -r requirements.txt
 ```
 
 ## Use
@@ -54,18 +52,9 @@ pip install -r requirements.txt
 ### Possible Features (Unclear how difficult these are to implement)
 * Difficulty Diversion - Change the difficulty level of the game being played (no more than 2 difficulty levels from the Streamer's current difficulty) for a period of time (minimum value (seconds) | maximum value (seconds))
 
-
-
 ## Super User Features (Streamer and/or Moderators)
 * Channel point redemption feed present (module or other integration) within OBS (STREAMER) - The redemption feed will allow the Streamer to approve/decline redemptions from within OBS
 * Channel Point redemption overlay - Allow the Streamer to add an overlay to display the most recent redemption and redeeming user
-
-
-## Run the program
-Can be run offline to sync rewards with live stream using API
-```sh
-python main.py
-```
 
 ## Team 
 - Team Captain: sinfathisar19
@@ -78,3 +67,12 @@ python main.py
 - Boppreh: https://github.com/boppreh/keyboard
 - UpgradeQ: https://github.com/upgradeQ/OBS-Studio-Python-Scripting-Cheatsheet-obspython-Examples-of-API#docs-and-code-examples 
 - twitchApp TokenGenerator: https://twitchapps.com/tokengen/
+
+## References
+- https://obsproject.com/wiki/Scripting-Tutorial-Source-Shake
+- https://github.com/obsproject/obs-studio/wiki/Getting-Started-With-OBS-Scripting
+- https://github.com/upgradeQ/OBS-Studio-Python-Scripting-Cheatsheet-obspython-Examples-of-API#debug
+- https://github.com/Bootscreen/OBS-Skripte/blob/master/TwitchSwitcher.py 
+
+## OBS api calls
+- https://obsproject.com/docs/reference-scenes.html?highlight=rotation#c.obs_sceneitem_set_rot
