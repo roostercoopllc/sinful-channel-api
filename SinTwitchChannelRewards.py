@@ -75,6 +75,7 @@ debug_mode = False
 twitch_settings = None
 client_id = ''
 oauth_token = ''
+#TODO do some shit what we talked about
 reward_duration = 120
 
 # OBS specific scripts
