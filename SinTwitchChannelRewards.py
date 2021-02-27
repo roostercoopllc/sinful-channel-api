@@ -27,6 +27,7 @@ from twitch import TwitchClient
 import rotatescreen
 import keyboard
 
+
 # Working Methods
 def screen_flip(duration, angle):
     screen = rotatescreen.get_primary_display()
@@ -73,19 +74,37 @@ def total_chaos(duration):
 live = True
 debug_mode = False
 twitch_settings = None
-client_id = ''
+client_id = '' 
+client_secret = ''
 oauth_token = ''
 #TODO do some shit what we talked about
-reward_duration = 120
+scene_flip_name = ''
+screen_flip_reward_name = ''
+crazy_keys_reward_name = ''
+screen_flip_duration = 120
+screen_flip_angle = 180
+crazy_keys_duration = 120
+total_chaos_duration = 120
 
 # OBS specific scripts
 def script_defaults(settings):
     global debug_mode
     if debug_mode: print("[Debug] Loaded Defaults")
 
+    # Authorization Settings
     obs.obs_data_set_default_bool(settings, "debug_mode", debug_mode)
-    obs.obs_data_set_default_string(settings, "oauth_token", oauth_token)
     obs.obs_data_set_default_string(settings, "client_id", client_id)
+    obs.obs_data_set_default_string(settings, "client_secret", client_secret)
+    obs.obs_data_set_default_string(settings, "oauth_token", oauth_token)
+
+    # Variable names
+    obs.obs_data_set_default_string(settings, "scene_flip_name", scene_flip_name)
+    obs.obs_data_set_default_string(settings, "screen_flip_reward_name", screen_flip_reward_name)
+    obs.obs_data_set_default_string(settings, "crazy_keys_reward_name", crazy_keys_reward_name)
+    obs.obs_data_set_default_int(settings, "screen_flip_duration", screen_flip_duration)
+    obs.obs_data_set_default_int(settings, "screen_flip_angle", screen_flip_angle)
+    obs.obs_data_set_default_int(settings, "crazy_keys_duration", crazy_keys_duration)
+    obs.obs_data_set_default_int(settings, "total_chaos_duration", screen_flip_duration)
 
 def script_description():
     return "<b>Redeem rewards from twich channel</b>" + \
@@ -97,12 +116,29 @@ def script_description():
 
 def script_update(settings):
     global client_id
+    global client_secret
     global oauth_token
-    global reward_duration
+
+    global scene_flip_name
+    global screen_flip_reward_name
+    global crazy_keys_reward_name
+    global screen_flip_duration
+    global screen_flip_angle
+    global crazy_keys_duration
+    global total_chaos_duration
 
     client_id = obs.obs_data_get_string(settings, 'client_id')
+    client_secret = obs.obs_data_get_string(settings, "client_secret")
     oauth_token = obs.obs_data_get_string(settings, 'oath_token')
-    reward_duration = obs.obs_data_get_string(settings, 'reward_duration')
+
+    # Reward Settings
+    scene_flip_name = obs.obs_data_get_string(settings, "scene_flip_name")
+    screen_flip_reward_name = obs.obs_data_get_string(settings, "screen_flip_reward_name")
+    crazy_keys_reward_name = obs.obs_data_get_string(settings, "crazy_keys_reward_name")
+    screen_flip_duration = obs.obs_data_get_int(settings, "screen_flip_duration")
+    screen_flip_angle = obs.obs_data_get_int(settings, "screen_flip_angle")
+    crazy_keys_duration = obs.obs_data_get_int(settings, "crazy_keys_duration")
+    total_chaos_duration = obs.obs_data_get_int(settings, "total_chaos_duration")
 
 def script_properties():
     global debug_mode
@@ -110,9 +146,18 @@ def script_properties():
 
     props = obs.obs_properties_create()
     obs.obs_properties_add_text(props, "client_id", "Client ID", obs.OBS_TEXT_DEFAULT )
+    obs.obs_properties_add_text(props, "client_secret", "Client Secret", obs.OBS_TEXT_DEFAULT )
     obs.obs_properties_add_text(props, "oauth_token", "Oauth Token", obs.OBS_TEXT_DEFAULT )
     # obs.obs_properties_add_editable_list(props, "twitch", "List of Rewards;Time to Reward;Cool Down", obs.OBS_EDITABLE_LIST_TYPE_STRINGS, obs.OBS_EDITABLE_LIST_TYPE_INT, obs.OBS_EDITABLE_LIST_TYPE_INT)
     
+    obs.obs_properties_add_text(props, "scene_flip_name", "Scene Name to Flip", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_text(props, "screen_flip_rewards_name", "Screen Flip Rewards name", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_text(props, "crazy_keys_reward_name", "Crazy Key Rewards Name", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_text(props, "screen_flip_duration", "Screen Flip Duration (Seconds)", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_text(props, "screen_flip_angle", "Screen Flip Angle [0,90,180,270]", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_text(props, "crazy_keys_duration", "Crazy Keys Duration (Seconds)", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_text(props, "total_chaos_duration", "Total Chaos Duration (Seconds)", obs.OBS_TEXT_DEFAULT)
+
     return props
 
 def script_save(settings):
@@ -138,27 +183,6 @@ def script_unload():
     if debug_mode: print("[TS] Unloaded script.")
     
     obs.timer_remove(set_twitch)
-
-def script_update(settings):
-    global debug_mode
-    if debug_mode: print("[TS] Updated properties.")
-    
-    global client_id
-    global oauth_token
-    global twitch_settings
-    global live
-            
-    debug_mode = obs.obs_data_get_bool(settings, "debug_mode")
-    client_id = obs.obs_data_get_string(settings, "client_id")
-    oauth_token = obs.obs_data_get_string(settings, "oauth_token")
-    
-    obs_twitch = obs.obs_data_get_array(settings, "twitch")
-    num_twitch = obs.obs_data_array_count(obs_twitch)
-    twitch_settings = []
-    for i in range(num_twitch):  # Convert C array to Python list
-        message_object = obs.obs_data_array_item(obs_twitch, i)
-        twitch_settings.append(obs.obs_data_get_string(message_object, "value"))
-    obs.obs_data_array_release(obs_twitch)
-        
+     
 def set_twitch():
     pass
