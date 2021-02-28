@@ -4,4 +4,6 @@ pypiwin32
 rotate-screen
 keyboard
 python-twitch-client
+websocket
+asyncio
 debugpy

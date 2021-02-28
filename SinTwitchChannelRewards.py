@@ -23,7 +23,7 @@ import time
 import random
 
 import obspython as obs
-from twitch import TwitchClient
+from twitch import TwitchHelix
 import rotatescreen
 import keyboard
 
@@ -73,7 +73,8 @@ def total_chaos(duration):
 # Configuration to load with script
 live = True
 debug_mode = False
-twitch_settings = None
+twitch_client = None
+user_id = ''
 client_id = '' 
 client_secret = ''
 oauth_token = ''
@@ -93,9 +94,9 @@ def script_defaults(settings):
 
     # Authorization Settings
     obs.obs_data_set_default_bool(settings, "debug_mode", debug_mode)
+    obs.obs_data_set_default_string(settings, "user_id", user_id)
     obs.obs_data_set_default_string(settings, "client_id", client_id)
     obs.obs_data_set_default_string(settings, "client_secret", client_secret)
-    obs.obs_data_set_default_string(settings, "oauth_token", oauth_token)
 
     # Variable names
     obs.obs_data_set_default_string(settings, "scene_flip_name", scene_flip_name)
@@ -109,15 +110,15 @@ def script_defaults(settings):
 def script_description():
     return "<b>Redeem rewards from twich channel</b>" + \
     "<hr/>" + \
-    "Create your Client-ID here:<br/><a href=\"https://dev.twitch.tv/console/apps/create\">Twitch Dev</a>" + \
-    "<br/>" + \
-    "Create yout Oauth-Token here (you need channel_read and channel_editor permission):<br/><a href=\"https://twitchtokengenerator.com/quick/8hkFXMYaO0\">twitchtokengenerator.com</a>" + \
-    "<hr/>"
+    "Create your Client-ID here:<br/><a href=\"https://dev.twitch.tv/console/apps/create\">Twitch Dev</a>" # + \
+#    "<br/>" + \
+#    "Create yout Oauth-Token here (you need channel_read and channel_editor permission):<br/><a href=\"https://twitchtokengenerator.com/quick/8hkFXMYaO0\">twitchtokengenerator.com</a>" + \
+#    "<hr/>"
 
 def script_update(settings):
+    global user_id
     global client_id
     global client_secret
-    global oauth_token
 
     global scene_flip_name
     global screen_flip_reward_name
@@ -127,9 +128,9 @@ def script_update(settings):
     global crazy_keys_duration
     global total_chaos_duration
 
+    user_id = obs.obs_data_get_string(settings, 'user_id')
     client_id = obs.obs_data_get_string(settings, 'client_id')
     client_secret = obs.obs_data_get_string(settings, "client_secret")
-    oauth_token = obs.obs_data_get_string(settings, 'oath_token')
 
     # Reward Settings
     scene_flip_name = obs.obs_data_get_string(settings, "scene_flip_name")
@@ -145,9 +146,9 @@ def script_properties():
     if debug_mode: print("[Debug] Loaded Defaults")
 
     props = obs.obs_properties_create()
+    obs.obs_properties_add_text(props, "user_id", "User ID", obs.OBS_TEXT_DEFAULT )
     obs.obs_properties_add_text(props, "client_id", "Client ID", obs.OBS_TEXT_DEFAULT )
     obs.obs_properties_add_text(props, "client_secret", "Client Secret", obs.OBS_TEXT_DEFAULT )
-    obs.obs_properties_add_text(props, "oauth_token", "Oauth Token", obs.OBS_TEXT_DEFAULT )
     # obs.obs_properties_add_editable_list(props, "twitch", "List of Rewards;Time to Reward;Cool Down", obs.OBS_EDITABLE_LIST_TYPE_STRINGS, obs.OBS_EDITABLE_LIST_TYPE_INT, obs.OBS_EDITABLE_LIST_TYPE_INT)
     
     obs.obs_properties_add_text(props, "scene_flip_name", "Scene Name to Flip", obs.OBS_TEXT_DEFAULT)
@@ -162,8 +163,19 @@ def script_properties():
 
 def script_save(settings):
     global debug_mode
+    global client_id
+    global client_secret
+    global oauth_token
+    global twitch_client
+
     if debug_mode: print("[Debug] Saved properties.")
     
+    # user id: 475702983
+
+    subscription_types = "channel.channel_points_custom_reward_redemption.update"
+    if client_id is not None and client_secret is not None:
+        twitch_client = TwitchHelix(client_id=client_id, client_secret=client_secret, scopes=["channel:read:redemptions","",""])
+
     script_update(settings)
 
 def script_load(settings):
