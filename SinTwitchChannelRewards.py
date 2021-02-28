@@ -26,7 +26,11 @@ import obspython as obs
 from twitch import TwitchHelix
 import rotatescreen
 import keyboard
+import websockets
+import asyncio
+import requests
 
+import debugpy
 
 # Working Methods
 def screen_flip(duration, angle):
@@ -141,6 +145,13 @@ def script_update(settings):
     crazy_keys_duration = obs.obs_data_get_int(settings, "crazy_keys_duration")
     total_chaos_duration = obs.obs_data_get_int(settings, "total_chaos_duration")
 
+    if client_id is not None and client_secret is not None:
+        twitch_client = TwitchHelix(client_id=client_id, client_secret=client_secret, scopes=["channel:read:redemptions","channel:manage:redemptions"])
+        twitch_client.get_oauth()
+        oauth_token = twitch_client._oauth_token
+        debugpy.breakpoint()
+        print(oauth_token)
+        
 def script_properties():
     global debug_mode
     if debug_mode: print("[Debug] Loaded Defaults")
@@ -163,38 +174,43 @@ def script_properties():
 
 def script_save(settings):
     global debug_mode
-    global client_id
-    global client_secret
-    global oauth_token
-    global twitch_client
-
     if debug_mode: print("[Debug] Saved properties.")
-    
-    # user id: 475702983
-
-    subscription_types = "channel.channel_points_custom_reward_redemption.update"
-    if client_id is not None and client_secret is not None:
-        twitch_client = TwitchHelix(client_id=client_id, client_secret=client_secret, scopes=["channel:read:redemptions","",""])
-
     script_update(settings)
 
 def script_load(settings):
     global debug_mode
-    global twitch_settings
-
     if debug_mode: print("[TS] Loaded script.")
 
     if len(oauth_token) > 0 and len(client_id) > 0:
         # obs.timer_add(set_twitch, check_frequency * check_frequency_to_millisec)
         pass 
 
-    twitch_settings = obs.obs_frontend_get_scene_names()
-
 def script_unload():
     global debug_mode
     if debug_mode: print("[TS] Unloaded script.")
     
     obs.timer_remove(set_twitch)
-     
-def set_twitch():
+    
+def query_rewards():
+    uri = f'https://api.twitch.tv/helix/channel_points/custom_rewards?broadcaster_id={user_id}'
+    headers = {
+        "Client-Id": client_id,
+        "Authorization": f"Bearer {oauth_token}"
+    }
+    return requests.get(uri, headers=headers).json()
+
+
+async def handle_reward_redemption():
     pass
+
+# Twitch Specific Work
+#async def twitch_channel_rewards():
+#    twitch_websocket_uri = 'wss://pubsub-edge.twitch.tv'
+#    async with websockets.connect(twitch_websocket_uri) as websocket:
+#        await websocket.send("PING")
+#        await websocket.recv()
+
+# asyncio.get_event_loop().run_until_complete(twitch_channel_rewards())
+
+debugpy.breakpoint()
+print(query_rewards())
