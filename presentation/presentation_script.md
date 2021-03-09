@@ -18,3 +18,8 @@ time! The screen is flipped, the keys are all wrong, and nothing makes sense for
 
 So…remembering that experience growing up and trying to find a way to make your good gamer friends less so…just for a moment, think of this Channel Point integration as 
 your ability to do all of that. This integration will give you that control and allow you to feel the power of chaos.
+
+Not to worry though…this level of chaos is only experienced by the streamer, while channel points are being redeemed. This integration was configured to operate in both Windows and MacOS environments, it works in conjunction with the most current version of OBS, and requires minimal configuration using a Python script on Python version 3.6.
+
+**LINK TO STORYBOARD**
+https://xd.adobe.com/view/c3b2f7d6-f37a-4141-815a-f516368eaa2f-96e1/
