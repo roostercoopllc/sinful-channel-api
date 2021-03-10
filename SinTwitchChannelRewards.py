@@ -29,6 +29,7 @@ import keyboard
 import websockets
 import asyncio
 import requests
+from threading import Thread
 
 import debugpy
 
@@ -84,6 +85,8 @@ client_secret = ''
 oauth_token = ''
 #TODO do some shit what we talked about
 scene_flip_name = ''
+scene_flip_item_name = ''
+scene_object = ''
 screen_flip_reward_name = ''
 crazy_keys_reward_name = ''
 screen_flip_duration = 120
@@ -125,6 +128,8 @@ def script_update(settings):
     global client_secret
 
     global scene_flip_name
+    global scene_flip_item_name
+    global scene_object
     global screen_flip_reward_name
     global crazy_keys_reward_name
     global screen_flip_duration
@@ -138,6 +143,7 @@ def script_update(settings):
 
     # Reward Settings
     scene_flip_name = obs.obs_data_get_string(settings, "scene_flip_name")
+    scene_flip_item_name = obs.obs_data_get_string(settings, "scene_flip_item_name")
     screen_flip_reward_name = obs.obs_data_get_string(settings, "screen_flip_reward_name")
     crazy_keys_reward_name = obs.obs_data_get_string(settings, "crazy_keys_reward_name")
     screen_flip_duration = obs.obs_data_get_int(settings, "screen_flip_duration")
@@ -152,6 +158,11 @@ def script_update(settings):
         debugpy.breakpoint()
         print(oauth_token)
         
+    scene_object = obs.obs_get_source_by_name(scene_flip_name)
+    debugpy.breakpoint
+    print(f'Scene Object: {dir(scene_object)}')
+    print(f'Scene Id: {obs.obs_scene_enum_items(scene_object)}')
+
 def script_properties():
     global debug_mode
     if debug_mode: print("[Debug] Loaded Defaults")
@@ -163,6 +174,7 @@ def script_properties():
     # obs.obs_properties_add_editable_list(props, "twitch", "List of Rewards;Time to Reward;Cool Down", obs.OBS_EDITABLE_LIST_TYPE_STRINGS, obs.OBS_EDITABLE_LIST_TYPE_INT, obs.OBS_EDITABLE_LIST_TYPE_INT)
     
     obs.obs_properties_add_text(props, "scene_flip_name", "Scene Name to Flip", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_text(props, "scene_flip_item_name", "Scene Item to Flip", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "screen_flip_rewards_name", "Screen Flip Rewards name", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "crazy_keys_reward_name", "Crazy Key Rewards Name", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "screen_flip_duration", "Screen Flip Duration (Seconds)", obs.OBS_TEXT_DEFAULT)
@@ -189,7 +201,7 @@ def script_unload():
     global debug_mode
     if debug_mode: print("[TS] Unloaded script.")
     
-    obs.timer_remove(set_twitch)
+    # obs.timer_remove(set_twitch)
     
 def query_rewards():
     uri = f'https://api.twitch.tv/helix/channel_points/custom_rewards?broadcaster_id={user_id}'
@@ -199,9 +211,14 @@ def query_rewards():
     }
     return requests.get(uri, headers=headers).json()
 
-
 async def handle_reward_redemption():
     pass
+
+def sync_reward_events(event_handler, reward_handler):
+    # event = Thread(target=event_handler)
+    # reward = Thread(target=reward_handler)
+    event_handler.start()
+    reward_handler.start()
 
 # Twitch Specific Work
 #async def twitch_channel_rewards():
@@ -212,5 +229,6 @@ async def handle_reward_redemption():
 
 # asyncio.get_event_loop().run_until_complete(twitch_channel_rewards())
 
-debugpy.breakpoint()
-print(query_rewards())
+
+# debugpy.breakpoint()
+# print(f'End of script')
