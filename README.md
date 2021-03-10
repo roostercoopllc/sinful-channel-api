@@ -56,6 +56,14 @@ python ./venv/Scripts/pywin32_postinstall.py -install
 * Channel point redemption feed present (module or other integration) within OBS (STREAMER) - The redemption feed will allow the Streamer to approve/decline redemptions from within OBS
 * Channel Point redemption overlay - Allow the Streamer to add an overlay to display the most recent redemption and redeeming user
 
+## Authentication
+```py
+>> from twitch import TwitchHelix
+>> twitch_client = TwitchHelix(client_id='', client_secret='', scopes=['channel:manage:redemptions', 'channel:read:redemptions'])
+>> twitch_client.get_oauth()
+>> twitch_client._oauth_token
+```
+
 ## Team 
 - Team Captain: sinfathisar19
 - Developer: icantiemyshoe
