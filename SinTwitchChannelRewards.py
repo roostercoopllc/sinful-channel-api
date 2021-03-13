@@ -179,7 +179,8 @@ def script_update(settings):
     for item in scene_items:
         print(item)
         obs.obs_sceneitem_get_info(item, obs_trans_info)
-        print(obs_trans_info.__getattr__('pos'))
+        print(obs_trans_info.__setattr__('rot', 180))
+        obs.obs_sceneitem_set_info(item, obs_trans_info)
         # scene_item = obs.obs_sceneitem_get_info(item)
 
 def script_properties():
