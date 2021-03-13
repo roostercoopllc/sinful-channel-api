@@ -175,13 +175,14 @@ def script_update(settings):
 
     scene_items = obs.obs_scene_enum_items(scene_object)
     obs_trans_info = obs.obs_transform_info()
-    
+
     for item in scene_items:
-        print(item)
-        obs.obs_sceneitem_get_info(item, obs_trans_info)
-        print(obs_trans_info.__setattr__('rot', 180))
-        obs.obs_sceneitem_set_info(item, obs_trans_info)
-        # scene_item = obs.obs_sceneitem_get_info(item)
+        check_source = obs.obs_sceneitem_get_source(item)
+        name = obs.obs_source_get_name(check_source)
+        if name == source_name:
+            revert(item, obs_trans_info)
+            # invert(item, obs_trans_info)
+            # scene_item = obs.obs_sceneitem_get_info(item)
 
 def script_properties():
     global debug_mode
@@ -236,6 +237,18 @@ def query_rewards():
 
 async def handle_reward_redemption():
     pass
+
+def invert(item, trans_info):
+    obs.obs_sceneitem_get_info(item, trans_info)
+    trans_info.__setattr__('rot', 180)
+    trans_info.__setattr__('alignment', 10)
+    obs.obs_sceneitem_set_info(item, trans_info)
+
+def revert(item, trans_info):
+    obs.obs_sceneitem_get_info(item, trans_info)
+    trans_info.__setattr__('rot', 0)
+    trans_info.__setattr__('alignment', 5)
+    obs.obs_sceneitem_set_info(item, trans_info)
 
 def just_flip_thing():  
     global source_object
