@@ -84,3 +84,14 @@ python ./venv/Scripts/pywin32_postinstall.py -install
 
 ## OBS api calls
 - https://obsproject.com/docs/reference-scenes.html?highlight=rotation#c.obs_sceneitem_set_rot
+
+## Command Line Trouble Shooting
+```py
+>> import SinTwitchChannelRewards as stcr
+>> from twitch import TwitchHelix
+>> client_id = <client-id>
+>> client_secret = <client-secret>
+>> twitch_client = TwitchHelix(client_id=client_id, client_secret=client_secret, scopes=["channel:read:redemptions","channel:manage:redemptions"])
+>> twitch_client.get_oauth()
+>> oauth_token = twitch_client._oauth_token
+```

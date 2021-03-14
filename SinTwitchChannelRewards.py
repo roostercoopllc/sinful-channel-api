@@ -95,6 +95,8 @@ screen_flip_duration = 120
 screen_flip_angle = 180
 crazy_keys_duration = 120
 total_chaos_duration = 120
+# Request specific stuff
+URL_BASE = 'https://api.twitch.tv/helix'
 
 # OBS specific scripts
 def script_defaults(settings):
@@ -129,6 +131,7 @@ def script_update(settings):
     global user_id
     global client_id
     global client_secret
+    global oauth_token
 
     global scene_name
     global scene_object
@@ -228,7 +231,7 @@ def script_unload():
     # obs.timer_remove(set_twitch)
     
 def query_rewards():
-    uri = f'https://api.twitch.tv/helix/channel_points/custom_rewards?broadcaster_id={user_id}'
+    uri = f'{URL_BASE}/channel_points/custom_rewards?broadcaster_id={user_id}'
     headers = {
         "Client-Id": client_id,
         "Authorization": f"Bearer {oauth_token}"
