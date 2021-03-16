@@ -19,19 +19,18 @@
 #                   :
 # python_version    : 3.6
 # ==============================================================================
+import asyncio
 import time
 import random
 
 import obspython as obs
-from twitch import TwitchHelix
 import rotatescreen
 import keyboard
-import websockets
-import asyncio
 import requests
-from threading import Thread
+from obswebsocket import obsws, events  # noqa: E402
 
 import debugpy
+import websocket
 
 # Working Methods
 def screen_flip(duration, angle):
@@ -81,7 +80,6 @@ debug_mode = False
 twitch_client = None
 user_id = ''
 client_id = '' 
-client_secret = ''
 oauth_token = ''
 #TODO do some shit what we talked about
 scene_name = ''
@@ -97,6 +95,9 @@ crazy_keys_duration = 120
 total_chaos_duration = 120
 # Request specific stuff
 URL_BASE = 'https://api.twitch.tv/helix'
+# WS_URL = 'wss://pubsub-edge.twitch.tv'
+WS_URL = 'localhost'
+WS_PORT = 8765 # 80 # 443 # '8765'
 
 # OBS specific scripts
 def script_defaults(settings):
@@ -107,7 +108,7 @@ def script_defaults(settings):
     obs.obs_data_set_default_bool(settings, "debug_mode", debug_mode)
     obs.obs_data_set_default_string(settings, "user_id", user_id)
     obs.obs_data_set_default_string(settings, "client_id", client_id)
-    obs.obs_data_set_default_string(settings, "client_secret", client_secret)
+    obs.obs_data_set_default_string(settings, "oauth_token", oauth_token)
 
     # Variable names
     obs.obs_data_set_default_string(settings, "scene_name", scene_name)
@@ -130,7 +131,6 @@ def script_description():
 def script_update(settings):
     global user_id
     global client_id
-    global client_secret
     global oauth_token
 
     global scene_name
@@ -147,7 +147,7 @@ def script_update(settings):
 
     user_id = obs.obs_data_get_string(settings, 'user_id')
     client_id = obs.obs_data_get_string(settings, 'client_id')
-    client_secret = obs.obs_data_get_string(settings, "client_secret")
+    oauth_token = obs.obs_data_get_string(settings, "oauth_token")
 
     # Reward Settings
     scene_name = obs.obs_data_get_string(settings, "scene_name")
@@ -158,13 +158,6 @@ def script_update(settings):
     screen_flip_angle = obs.obs_data_get_int(settings, "screen_flip_angle")
     crazy_keys_duration = obs.obs_data_get_int(settings, "crazy_keys_duration")
     total_chaos_duration = obs.obs_data_get_int(settings, "total_chaos_duration")
-
-    if client_id is not None and client_secret is not None:
-        twitch_client = TwitchHelix(client_id=client_id, client_secret=client_secret, scopes=["channel:read:redemptions","channel:manage:redemptions"])
-        twitch_client.get_oauth()
-        oauth_token = twitch_client._oauth_token
-        debugpy.breakpoint()
-        print(oauth_token)
         
     scenes = obs.obs_frontend_get_scenes()
     # print(f'Scene Objects: {scenes}')
@@ -174,7 +167,7 @@ def script_update(settings):
         name = obs.obs_source_get_name(scene)
         if name == scene_name:
             scene_object = obs.obs_scene_from_source(scene)
-            print(f'Scene Object: {scene_object}')
+            # print(f'Scene Object: {scene_object}')
 
     scene_items = obs.obs_scene_enum_items(scene_object)
     obs_trans_info = obs.obs_transform_info()
@@ -194,7 +187,7 @@ def script_properties():
     props = obs.obs_properties_create()
     obs.obs_properties_add_text(props, "user_id", "User ID", obs.OBS_TEXT_DEFAULT )
     obs.obs_properties_add_text(props, "client_id", "Client ID", obs.OBS_TEXT_DEFAULT )
-    obs.obs_properties_add_text(props, "client_secret", "Client Secret", obs.OBS_TEXT_DEFAULT )
+    obs.obs_properties_add_text(props, "oauth_token", "Oauth Token", obs.OBS_TEXT_DEFAULT )
     # obs.obs_properties_add_editable_list(props, "twitch", "List of Rewards;Time to Reward;Cool Down", obs.OBS_EDITABLE_LIST_TYPE_STRINGS, obs.OBS_EDITABLE_LIST_TYPE_INT, obs.OBS_EDITABLE_LIST_TYPE_INT)
     
     obs.obs_properties_add_text(props, "scene_name", "Scene Name", obs.OBS_TEXT_DEFAULT)
@@ -238,9 +231,6 @@ def query_rewards():
     }
     return requests.get(uri, headers=headers).json()
 
-async def handle_reward_redemption():
-    pass
-
 def invert(item, trans_info):
     obs.obs_sceneitem_get_info(item, trans_info)
     trans_info.__setattr__('rot', 180)
@@ -253,21 +243,16 @@ def revert(item, trans_info):
     trans_info.__setattr__('alignment', 5)
     obs.obs_sceneitem_set_info(item, trans_info)
 
-def just_flip_thing():  
-    global source_object
-    print('running')
-    obs.obs_source_set_async_rotation(source_object, 180)
-
-
 # Twitch Specific Work
-#async def twitch_channel_rewards():
-#    twitch_websocket_uri = 'wss://pubsub-edge.twitch.tv'
-#    async with websockets.connect(twitch_websocket_uri) as websocket:
-#        await websocket.send("PING")
-#        await websocket.recv()
+async def keep_alive(ws):
+    asyncio.sleep(10)
+    print('pinging')
+    pong_waiter = await ws.ping()
 
-# asyncio.get_event_loop().run_until_complete(twitch_channel_rewards())
+async def handle_reward_redemption(message):
+    print(f"Got message: {message}")
 
-
-# debugpy.breakpoint()
-# print(f'End of script')
+ws = obsws(WS_URL, WS_PORT, '')
+ws.register(handle_reward_redemption)
+ws.register(keep_alive(ws))
+ws.connect()

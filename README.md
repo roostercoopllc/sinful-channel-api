@@ -4,33 +4,17 @@ This repository houses the Submission for the https://twitchchannelpoints.devpos
 
 The full competition submission can be found here: https://devpost.com/software/ti-esrever-dna-ti-pilf-nwod-gnaht-ym-tup-i 
 
-
-## Install
-
-
 ### Requirements 
 * OBS (or other streaming content manager that can use python)
 * Python3
+* Twitch CLI - https://github.com/twitchdev/twitch-cli/blob/main/docs/token.md
 * Twitch Affiliate or Partner status
 * Twitch Channel Points enabled
 
-### Dependancy install
-Fill this out Derek
+### Install
 ```ps1
-```
-
-Move obspython from the obs-studios directory into your python 3.6 path
-```sh
-```
-
-##### Windows install
-```ps1
-pip install virtualenv
-python --python=<python path> venv-m venv ./venv
-./venv/Scripts/activate
-pip install -r requirements.txt
-# Need to perform post install (maybe)
-python ./venv/Scripts/pywin32_postinstall.py -install
+PS> pip install -r requirements.txt
+PS> 
 ```
 
 ## Use
@@ -39,7 +23,6 @@ python ./venv/Scripts/pywin32_postinstall.py -install
 * Feature duration and cost scales with points spent for redemption
 * Feature redemptions can be given a global and user-level cooldown rate. Global would affect all users (to include the streamer and moderators), user-level would affect only the individual user who made the initial redemption
 * Redeemed points will be deducted from the redeeming user following a confirmation on behalf of the Streamer or moderators; points may be refunded if the redemption is declined
-* 
 
 ## User Features
 * Screen Flip - Rotate the Streamer's screen horizontally, vertically, or both for a period of time (minimum value (seconds) | maximum value (seconds))
@@ -57,6 +40,24 @@ python ./venv/Scripts/pywin32_postinstall.py -install
 * Channel Point redemption overlay - Allow the Streamer to add an overlay to display the most recent redemption and redeeming user
 
 ## Authentication
+For your application, you need to have the twitch developer console Oauth Redirect be configured to return to http://localhost:3000
+
+Configure your twitch cli client
+```ps1
+PS> twitch configure -i <client-id> -s <client-secret> 
+```
+
+Grab your user Oauth token
+```ps1
+PS> twitch token
+PS> twitch token -u -s "channel:manage:redemptions channel:read:redemptions"
+# Opening browser. Press Ctrl+C to cancel...
+# 2021/03/15 10:16:45 User Access Token: fb115lv5e8lk7yn0gsd4arx9v25ia0 # This is the token to put in the Oauth Field
+# Refresh Token: 0rpz6o3v5gsgf3tm76hxaxp1vsrhp54ck2hyl0fij9nxr7rx9q
+# Expires At: 2021-03-15 17:53:58.4239375 +0000 UTC
+# Scopes: [channel:manage:redemptions channel:read:redemptions]
+```
+
 ```py
 >> from twitch import TwitchHelix
 >> twitch_client = TwitchHelix(client_id='', client_secret='', scopes=['channel:manage:redemptions', 'channel:read:redemptions'])
@@ -66,15 +67,15 @@ python ./venv/Scripts/pywin32_postinstall.py -install
 
 ## Team 
 - Team Captain: sinfathisar19
-- Developer: icantiemyshoe
+- Developer: icantiemyshoe, evo
 - Team Mascot: j_urby
 
 ## Special Thanks to:
-- Teekeks: https://github.com/Teekeks/pyTwitchAPI
+- twitchDev: https://github.com/twitchdev/twitch-cli 
 - Danny-Burrows: https://github.com/danny-burrows/rotate-screen
 - Boppreh: https://github.com/boppreh/keyboard
 - UpgradeQ: https://github.com/upgradeQ/OBS-Studio-Python-Scripting-Cheatsheet-obspython-Examples-of-API#docs-and-code-examples 
-- twitchApp TokenGenerator: https://twitchapps.com/tokengen/
+- KirillMysnik: https://github.com/KirillMysnik/obs-ws-rc 
 
 ## References
 - https://obsproject.com/wiki/Scripting-Tutorial-Source-Shake
@@ -84,14 +85,3 @@ python ./venv/Scripts/pywin32_postinstall.py -install
 
 ## OBS api calls
 - https://obsproject.com/docs/reference-scenes.html?highlight=rotation#c.obs_sceneitem_set_rot
-
-## Command Line Trouble Shooting
-```py
->> import SinTwitchChannelRewards as stcr
->> from twitch import TwitchHelix
->> client_id = <client-id>
->> client_secret = <client-secret>
->> twitch_client = TwitchHelix(client_id=client_id, client_secret=client_secret, scopes=["channel:read:redemptions","channel:manage:redemptions"])
->> twitch_client.get_oauth()
->> oauth_token = twitch_client._oauth_token
-```

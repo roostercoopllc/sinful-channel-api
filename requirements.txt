@@ -3,7 +3,7 @@ requests
 pypiwin32
 rotate-screen
 keyboard
-python-twitch-client
+debugpy
 websockets
 asyncio
-debugpy
+obs-websocket-py
