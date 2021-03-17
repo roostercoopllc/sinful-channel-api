@@ -27,11 +27,10 @@ import obspython as obs
 import rotatescreen
 import keyboard
 import requests
-from obswebsocket import obsws, events  # noqa: E402
+from obswebsocket import obsws  # noqa: E402
 from threading import Thread
 
 import debugpy
-import websocket
 
 # Working Methods
 def screen_flip(duration, angle):
@@ -255,10 +254,15 @@ async def keep_alive(ws):
 async def handle_reward_redemption(message):
     print(f"Got message: {message}")
 
+async def keep_alive(ws):
+    pong_waiter = await ws.ping()
+    print("> ping")
+    await pong_waiter
+    print("< pong")
+
 def channel_thread():
     ws = obsws(WS_URL, WS_PORT, '')
     ws.register(handle_reward_redemption)
-    # ws.register(keep_alive(ws))
     ws.connect()
 
 rewards_thread = Thread(target=channel_thread)
