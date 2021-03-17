@@ -28,6 +28,7 @@ import rotatescreen
 import keyboard
 import requests
 from obswebsocket import obsws, events  # noqa: E402
+from threading import Thread
 
 import debugpy
 import websocket
@@ -244,15 +245,21 @@ def revert(item, trans_info):
     obs.obs_sceneitem_set_info(item, trans_info)
 
 # Twitch Specific Work
+"""
 async def keep_alive(ws):
     asyncio.sleep(10)
     print('pinging')
     pong_waiter = await ws.ping()
+"""
 
 async def handle_reward_redemption(message):
     print(f"Got message: {message}")
 
-ws = obsws(WS_URL, WS_PORT, '')
-ws.register(handle_reward_redemption)
-ws.register(keep_alive(ws))
-ws.connect()
+def channel_thread():
+    ws = obsws(WS_URL, WS_PORT, '')
+    ws.register(handle_reward_redemption)
+    # ws.register(keep_alive(ws))
+    ws.connect()
+
+rewards_thread = Thread(target=channel_thread)
+rewards_thread.start()
