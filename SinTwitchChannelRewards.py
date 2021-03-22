@@ -78,6 +78,7 @@ def total_chaos(duration):
 live = True
 debug_mode = False
 twitch_client = None
+flip_thread = None
 user_id = ''
 client_id = '' 
 oauth_token = ''
@@ -85,6 +86,7 @@ oauth_token = ''
 scene_name = ''
 scene_object = None
 scene_item = None
+transform_object = None
 source_name = ''
 source_object = None
 screen_flip_reward_name = ''
@@ -129,6 +131,7 @@ def script_description():
 #    "<hr/>"
 
 def script_update(settings):
+    global flip_thread
     global user_id
     global client_id
     global oauth_token
@@ -138,6 +141,7 @@ def script_update(settings):
     global scene_item
     global source_name
     global source_object
+    global transform_object
     global screen_flip_reward_name
     global crazy_keys_reward_name
     global screen_flip_duration
@@ -161,6 +165,7 @@ def script_update(settings):
         
     scenes = obs.obs_frontend_get_scenes()
     # print(f'Scene Objects: {scenes}')
+    transform_object = obs.obs_transform_info()
 
     ## Finding Scene Object
     for scene in scenes:
@@ -175,11 +180,14 @@ def script_update(settings):
     for item in scene_items:
         check_source = obs.obs_sceneitem_get_source(item)
         name = obs.obs_source_get_name(check_source)
-        if name == source_name:
-            revert(item, obs_trans_info)
+        # if name == source_name:
+            # revert(item, obs_trans_info)
             # invert(item, obs_trans_info)
             # scene_item = obs.obs_sceneitem_get_info(item)
 
+    if flip_thread is None:
+                    flip_thread = Thread(target=obs_screen_flip, args=(screen_flip_duration, screen_flip_angle))
+                    flip_thread.start()
 def script_properties():
     global debug_mode
     if debug_mode: print("[Debug] Loaded Defaults")
@@ -210,8 +218,6 @@ def script_load(settings):
     global debug_mode
 
     if debug_mode: print("[TS] Loaded script.")
-
-    # obs.timer_add(just_flip_thing, 5)
 
     if len(oauth_token) > 0 and len(client_id) > 0:
         # obs.timer_add(set_twitch, check_frequency * check_frequency_to_millisec)
@@ -244,13 +250,6 @@ def revert(item, trans_info):
     obs.obs_sceneitem_set_info(item, trans_info)
 
 # Twitch Specific Work
-"""
-async def keep_alive(ws):
-    asyncio.sleep(10)
-    print('pinging')
-    pong_waiter = await ws.ping()
-"""
-
 async def handle_reward_redemption(message):
     print(f"Got message: {message}")
 
@@ -265,5 +264,15 @@ def channel_thread():
     ws.register(handle_reward_redemption)
     ws.connect()
 
-rewards_thread = Thread(target=channel_thread)
-rewards_thread.start()
+def obs_screen_flip(duration, angle):
+    while True:
+        time.sleep(duration)
+        print(f'Screen Flip Method: {duration}, {angle}')
+        screen = rotatescreen.get_primary_display()
+        print('Screen Flip')
+        invert(scene_item, transform_object)
+        screen.rotate_to(angle)
+        time.sleep(duration)
+        screen.rotate_to(0)
+        print('Screen Flip Back')
+        revert(scene_item, transform_object)
