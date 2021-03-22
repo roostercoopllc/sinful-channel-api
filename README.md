@@ -2,11 +2,11 @@
 ## Description
 This repository houses the Submission for the https://twitchchannelpoints.devpost.com/ hackathon by Team Sin.
 
-The full competition submission can be found here: https://devpost.com/software/ti-esrever-dna-ti-pilf-nwod-gnaht-ym-tup-i 
+The full competition submission can be found here: 
 
 ### Requirements 
-* OBS (or other streaming content manager that can use python)
-* Python3
+* OBS Studios
+* Python 3.6
 * Twitch CLI - https://github.com/twitchdev/twitch-cli/blob/main/docs/token.md
 * Twitch Affiliate or Partner status
 * Twitch Channel Points enabled
@@ -14,30 +14,18 @@ The full competition submission can be found here: https://devpost.com/software/
 ### Install
 ```ps1
 PS> pip install -r requirements.txt
-PS> 
 ```
 
 ## Use
-* The steamer will be given control of which Features to turn on/off, the channel point price per redemption, the ability to 
+* The steamer will be given control of which Features to turn on/off, the channel point price per redemption 
 * All Feature durations and costs can be determined by the Streamer (or Moderators)
-* Feature duration and cost scales with points spent for redemption
-* Feature redemptions can be given a global and user-level cooldown rate. Global would affect all users (to include the streamer and moderators), user-level would affect only the individual user who made the initial redemption
 * Redeemed points will be deducted from the redeeming user following a confirmation on behalf of the Streamer or moderators; points may be refunded if the redemption is declined
 
-## User Features
+## Features
 * Screen Flip - Rotate the Streamer's screen horizontally, vertically, or both for a period of time (minimum value (seconds) | maximum value (seconds))
-* Grey Grumpkin - Change the Streamer's display to gray scale for a period of time (minimum value (seconds) | maximum value (seconds))
-* Brightness Blast - Increase the brightness of the Streamer's display for a period of time (minimum value (seconds) | maximum value (seconds))
-* Crazy Keys - Switch the ASDW keys to be bound to UIOK where U is "right", I is "down", O is "left", and K is "up" for a period of time (minimum value (seconds) | maximum value (seconds))
+* Crazy Keys - Switch the WASD keys to be bound to a different key on WASD (minimum value (seconds) | maximum value (seconds))
 * Camera Whirl - REQUIRES CAMERA OVERLAY ENABLED - Change the orientation and position of the Streamer's camera [Rotate (Left, Right), Mirror, Flip, Spin] for a period of time (minimum value (seconds) | maximum value (seconds))
-* Mic Mute - Mute the Streamer's microphone for a period of time (minimum value (seconds) | maximum value (seconds))
-
-### Possible Features (Unclear how difficult these are to implement)
-* Difficulty Diversion - Change the difficulty level of the game being played (no more than 2 difficulty levels from the Streamer's current difficulty) for a period of time (minimum value (seconds) | maximum value (seconds))
-
-## Super User Features (Streamer and/or Moderators)
-* Channel point redemption feed present (module or other integration) within OBS (STREAMER) - The redemption feed will allow the Streamer to approve/decline redemptions from within OBS
-* Channel Point redemption overlay - Allow the Streamer to add an overlay to display the most recent redemption and redeeming user
+* Total Chaos - Flip the screen, mix up the keys, make it pure chaos.
 
 ## Authentication
 For your application, you need to have the twitch developer console Oauth Redirect be configured to return to http://localhost:3000
@@ -58,13 +46,6 @@ PS> twitch token -u -s "channel:manage:redemptions channel:read:redemptions"
 # Scopes: [channel:manage:redemptions channel:read:redemptions]
 ```
 
-```py
->> from twitch import TwitchHelix
->> twitch_client = TwitchHelix(client_id='', client_secret='', scopes=['channel:manage:redemptions', 'channel:read:redemptions'])
->> twitch_client.get_oauth()
->> twitch_client._oauth_token
-```
-
 ## Team 
 - Team Captain: sinfathisar19
 - Developer: icantiemyshoe, evo
@@ -75,13 +56,10 @@ PS> twitch token -u -s "channel:manage:redemptions channel:read:redemptions"
 - Danny-Burrows: https://github.com/danny-burrows/rotate-screen
 - Boppreh: https://github.com/boppreh/keyboard
 - UpgradeQ: https://github.com/upgradeQ/OBS-Studio-Python-Scripting-Cheatsheet-obspython-Examples-of-API#docs-and-code-examples 
-- KirillMysnik: https://github.com/KirillMysnik/obs-ws-rc 
 
-## References
-- https://obsproject.com/wiki/Scripting-Tutorial-Source-Shake
-- https://github.com/obsproject/obs-studio/wiki/Getting-Started-With-OBS-Scripting
-- https://github.com/upgradeQ/OBS-Studio-Python-Scripting-Cheatsheet-obspython-Examples-of-API#debug
-- https://github.com/Bootscreen/OBS-Skripte/blob/master/TwitchSwitcher.py 
-
-## OBS api calls
-- https://obsproject.com/docs/reference-scenes.html?highlight=rotation#c.obs_sceneitem_set_rot
+## Future Features
+* Grey Grumpkin - Change the Streamer's display to gray scale for a period of time (minimum value (seconds) | maximum value (seconds))
+* Brightness Blast - Increase the brightness of the Streamer's display for a period of time (minimum value (seconds) | maximum value (seconds))
+* Difficulty Diversion - Change the difficulty level of the game being played (no more than 2 difficulty levels from the Streamer's current difficulty) for a period of time (minimum value (seconds) | maximum value (seconds))
+* Channel point redemption feed present (module or other integration) within OBS (STREAMER) - The redemption feed will allow the Streamer to approve/decline redemptions from within OBS
+* Channel Point redemption overlay - Allow the Streamer to add an overlay to display the most recent redemption and redeeming user
