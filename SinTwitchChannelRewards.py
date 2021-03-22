@@ -32,10 +32,10 @@ import requests
 import debugpy
 
 # Working Methods
-def screen_flip(duration, angle):
+async def screen_flip(duration, angle):
     screen = rotatescreen.get_primary_display()
     screen.rotate_to(angle)
-    time.sleep(duration)
+    asyncio.sleep(duration)
     screen.rotate_to(0)
 
 def crazy_keys(duration):
@@ -73,6 +73,8 @@ def total_chaos(duration):
     crazy_keys(duration)
     
 # Configuration to load with script
+LIVE = False
+
 debug_mode = False
 user_id = ''
 client_id = '' 
@@ -143,6 +145,7 @@ def script_description():
     "Create your Client-ID here:<br/><a href=\"https://dev.twitch.tv/console/apps/create\">Twitch Dev</a>"
 
 def script_update(settings):
+    global LIVE
     global user_id
     global client_id
     global oauth_token
@@ -219,6 +222,10 @@ def script_update(settings):
                 check_source = obs.obs_sceneitem_get_source(item)
                 name = obs.obs_source_get_name(check_source)
 
+    if oauth_token is not None:
+        LIVE = True
+        loop_over_award_redemptions()
+
 def script_properties():
     global debug_mode
     if debug_mode: print("[Debug] Loaded Defaults")
@@ -294,20 +301,24 @@ def make_the_rewards(props, prop, *args, **kwargs):
     global crazy_keys_reward_id    
     global total_chaos_reward_id
     print('This is clicking at least')
+    # Screen Flip Reward Registration
     if screen_flip_reward_id is not None:
-        pass
+        my_reward = create_custom_rewards(screen_flip_reward_title, screen_flip_cost, screen_flip_cooldown)
+        screen_flip_reward_id = my_reward['id']
     else:
-        pass
-
+        update_custom_rewards(screen_flip_reward_id, screen_flip_reward_title, screen_flip_cost, screen_flip_cooldown)
+    # Crazy Key Reward Registration
     if crazy_keys_reward_id is not None:
-        pass
+        my_reward = create_custom_rewards(crazy_keys_reward_title, crazy_keys_cost, crazy_keys_cooldown)
+        crazy_keys_reward_id = my_reward['id']
     else:
-        pass
-
+        update_custom_rewards(crazy_keys_reward_id, crazy_keys_reward_title, crazy_keys_cost, crazy_keys_cooldown)
+    # Total Chaos Rewards Registration
     if total_chaos_reward_id is not None:
-        pass
+        my_reward = create_custom_rewards(total_chaos_reward_title, total_chaos_cost, total_chaos_cooldown)
+        total_chaos_reward_id = my_reward['id']
     else:
-        pass 
+        update_custom_rewards(total_chaos_reward_id, total_chaos_reward_title, total_chaos_cost, total_chaos_cooldown)
 
 def get_custom_rewards():
     uri = f'https://api.twitch.tv/helix/channel_points/custom_rewards?broadcaster_id={user_id}'
@@ -316,7 +327,7 @@ def get_custom_rewards():
         "Authorization": f"Bearer {oauth_token}",
         "Content-Type": "application/json"
     }
-    rewards_requests = requests.get(uri, headers=headers).json()
+    rewards_requests = requests.get(uri, headers=headers).json()['data']
     return rewards_requests
 
 def create_custom_rewards(title, cost, cooldown):
@@ -333,7 +344,7 @@ def create_custom_rewards(title, cost, cooldown):
         "is_global_cooldown_enabled": True,
         "global_cooldown_seconds": cooldown * 60
     })
-    create_request = requests.post(uri, headers=headers, data=data).json()
+    create_request = requests.post(uri, headers=headers, data=data).json()['data']
     return create_request
 
 def update_custom_rewards(id, title, cost, cooldown):
@@ -350,7 +361,7 @@ def update_custom_rewards(id, title, cost, cooldown):
         "is_global_cooldown_enabled": True,
         "global_cooldown_seconds": cooldown * 60
     })
-    update_request = requests.patch(uri, headers=headers, data=data).json()
+    update_request = requests.patch(uri, headers=headers, data=data).json()['data']
     return update_request
 
 def poll_for_redemptions(reward_id):
@@ -360,7 +371,7 @@ def poll_for_redemptions(reward_id):
         "Authorization": f"Bearer {oauth_token}",
         "Content-Type": "application/json"
     }
-    redemptions_request = requests.get(uri, headers=headers).json()
+    redemptions_request = requests.get(uri, headers=headers).json()['data']
     return redemptions_request
 
 def fulfill_rewards(reward_id, redemption_id):
@@ -373,19 +384,33 @@ def fulfill_rewards(reward_id, redemption_id):
     data = json.dumps({
         "status": "FULFILLED"
     })
-    fulfill_request = requests.patch(uri, headers=headers, data=data).json()
+    fulfill_request = requests.patch(uri, headers=headers, data=data).json()['data']
     return fulfill_request
 
-# Crap code
-def obs_screen_flip(duration, angle):
-    while True:
-        time.sleep(duration)
-        print(f'Screen Flip Method: {duration}, {angle}')
-        screen = rotatescreen.get_primary_display()
-        print('Screen Flip')
-        invert(scene_item, transform_object)
-        screen.rotate_to(angle)
-        time.sleep(duration)
-        screen.rotate_to(0)
-        print('Screen Flip Back')
-        revert(scene_item, transform_object)
+def triage_rewards(reward_type, reward_list):
+    if reward_list.__len__() > 0:
+        lucky_reward = reward_list[0]['reward']
+        lucky_id = reward_list[0]['id']
+        if reward_type == 'screen flip':
+            print(f'Screen Flip Method: {screen_flip_duration}, {screen_flip_angle}')
+            invert(scene_item, transform_object)
+            screen_flip(screen_flip_duration, screen_flip_duration)
+            revert(scene_item, transform_object)
+        elif reward_type == 'crazy_keys':
+            crazy_keys(crazy_keys_duration)
+        elif reward_type == 'total_chaos':
+            total_chaos(total_chaos_duration)
+        fulfill_rewards(lucky_id, lucky_reward['id'])
+    else:
+        print(f'No {reward_type} rewards at this time')
+
+async def loop_over_award_redemptions():
+    while LIVE:
+        asyncio.sleep(15)
+        print('Looking for rewards')
+        sf_redemptions = poll_for_redemptions(screen_flip_reward_id)
+        triage_rewards('screen flip', sf_redemptions)
+        ck_redemptions = poll_for_redemptions(crazy_keys_reward_id)
+        triage_rewards('crazy_keys', ck_redemptions)
+        tc_redemptions = poll_for_redemptions(total_chaos_reward_id)
+        triage_rewards('total_chaos', tc_redemptions)
