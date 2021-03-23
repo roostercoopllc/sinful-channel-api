@@ -21,15 +21,14 @@
 # ==============================================================================
 import time
 import random
+import json
+from threading import Thread
 
 import obspython as obs
-from twitch import TwitchHelix
+from requests.api import head, request
 import rotatescreen
 import keyboard
-import websockets
-import asyncio
 import requests
-from threading import Thread
 
 import debugpy
 
@@ -73,28 +72,39 @@ def brightness_blast():
 def total_chaos(duration):
     screen_flip(duration, 180)
     crazy_keys(duration)
-    mic_mix()
     
 # Configuration to load with script
-live = True
+LIVE = False
+
 debug_mode = False
-twitch_client = None
 user_id = ''
 client_id = '' 
-client_secret = ''
 oauth_token = ''
-#TODO do some shit what we talked about
 scene_name = ''
 scene_object = None
 scene_item = None
+transform_object = None
 source_name = ''
 source_object = None
-screen_flip_reward_name = ''
-crazy_keys_reward_name = ''
+
+screen_flip_reward_title = ''
+screen_flip_reward_id = None
 screen_flip_duration = 120
 screen_flip_angle = 180
+screen_flip_cost = 1000
+screen_flip_cooldown = 5
+
+crazy_keys_reward_title = ''
+crazy_keys_reward_id = None
 crazy_keys_duration = 120
+crazy_keys_cost = 1500
+crazy_keys_cooldown = 5
+
+total_chaos_reward_title = ''
+total_chaos_reward_id = None
 total_chaos_duration = 120
+total_chaos_cost = 5000
+total_chaos_cooldown = 5
 
 # OBS specific scripts
 def script_defaults(settings):
@@ -105,84 +115,124 @@ def script_defaults(settings):
     obs.obs_data_set_default_bool(settings, "debug_mode", debug_mode)
     obs.obs_data_set_default_string(settings, "user_id", user_id)
     obs.obs_data_set_default_string(settings, "client_id", client_id)
-    obs.obs_data_set_default_string(settings, "client_secret", client_secret)
+    obs.obs_data_set_default_string(settings, "oauth_token", oauth_token)
 
-    # Variable names
+    # Source Objects
     obs.obs_data_set_default_string(settings, "scene_name", scene_name)
     obs.obs_data_set_default_string(settings, "source_name", source_name)
-    obs.obs_data_set_default_string(settings, "screen_flip_reward_name", screen_flip_reward_name)
-    obs.obs_data_set_default_string(settings, "crazy_keys_reward_name", crazy_keys_reward_name)
+    
+    # Screen Flip Data
+    obs.obs_data_set_default_string(settings, "screen_flip_reward_title", screen_flip_reward_title)
     obs.obs_data_set_default_int(settings, "screen_flip_duration", screen_flip_duration)
     obs.obs_data_set_default_int(settings, "screen_flip_angle", screen_flip_angle)
+    obs.obs_data_set_default_int(settings, "screen_flip_cost", screen_flip_angle)
+    obs.obs_data_set_default_int(settings, "screen_flip_cooldown", screen_flip_angle)
+    
+    # Crazy Keys Data
+    obs.obs_data_set_default_string(settings, "crazy_keys_reward_title", crazy_keys_reward_title)
     obs.obs_data_set_default_int(settings, "crazy_keys_duration", crazy_keys_duration)
-    obs.obs_data_set_default_int(settings, "total_chaos_duration", screen_flip_duration)
+    obs.obs_data_set_default_int(settings, "crazy_keys_cost", crazy_keys_duration)
+    obs.obs_data_set_default_int(settings, "crazy_keys_cooldown", crazy_keys_duration)
+    
+    # Total Chaos Data
+    obs.obs_data_set_default_string(settings, "total_chaos_reward_title", total_chaos_reward_title)
+    obs.obs_data_set_default_int(settings, "total_chaos_duration", total_chaos_duration)
+    obs.obs_data_set_default_int(settings, "total_chaos_cost", total_chaos_duration)
+    obs.obs_data_set_default_int(settings, "total_chaos_cooldown", total_chaos_duration)
 
 def script_description():
     return "<b>Redeem rewards from twich channel</b>" + \
     "<hr/>" + \
-    "Create your Client-ID here:<br/><a href=\"https://dev.twitch.tv/console/apps/create\">Twitch Dev</a>" # + \
-#    "<br/>" + \
-#    "Create yout Oauth-Token here (you need channel_read and channel_editor permission):<br/><a href=\"https://twitchtokengenerator.com/quick/8hkFXMYaO0\">twitchtokengenerator.com</a>" + \
-#    "<hr/>"
+    "Create your Client-ID here:<br/><a href=\"https://dev.twitch.tv/console/apps/create\">Twitch Dev</a>"
 
 def script_update(settings):
+    global LIVE
     global user_id
     global client_id
-    global client_secret
+    global oauth_token
 
     global scene_name
     global scene_object
     global scene_item
+
     global source_name
     global source_object
-    global screen_flip_reward_name
-    global crazy_keys_reward_name
+
+    global transform_object
+
+    global screen_flip_reward_title
+    global screen_flip_reward_id
     global screen_flip_duration
     global screen_flip_angle
+    global screen_flip_cost
+    global screen_flip_cooldown
+
+    global crazy_keys_reward_title
+    global crazy_keys_reward_id
     global crazy_keys_duration
+    global crazy_keys_cost
+    global crazy_keys_cooldown
+    
+    global total_chaos_reward_title
+    global total_chaos_reward_id
     global total_chaos_duration
+    global total_chaos_cost
+    global total_chaos_cooldown
 
     user_id = obs.obs_data_get_string(settings, 'user_id')
     client_id = obs.obs_data_get_string(settings, 'client_id')
-    client_secret = obs.obs_data_get_string(settings, "client_secret")
+    oauth_token = obs.obs_data_get_string(settings, "oauth_token")
 
     # Reward Settings
     scene_name = obs.obs_data_get_string(settings, "scene_name")
     source_name = obs.obs_data_get_string(settings, "source_name")
-    screen_flip_reward_name = obs.obs_data_get_string(settings, "screen_flip_reward_name")
-    crazy_keys_reward_name = obs.obs_data_get_string(settings, "crazy_keys_reward_name")
+
+    # Screen Flip Settings
+    screen_flip_reward_title = obs.obs_data_get_string(settings, "screen_flip_reward_title")
+    screen_flip_reward_id = obs.obs_data_get_string(settings, "screen_flip_reward_id")
     screen_flip_duration = obs.obs_data_get_int(settings, "screen_flip_duration")
     screen_flip_angle = obs.obs_data_get_int(settings, "screen_flip_angle")
-    crazy_keys_duration = obs.obs_data_get_int(settings, "crazy_keys_duration")
-    total_chaos_duration = obs.obs_data_get_int(settings, "total_chaos_duration")
+    screen_flip_cost = obs.obs_data_get_int(settings, "screen_flip_cost")
+    screen_flip_cooldown = obs.obs_data_get_int(settings, "screen_flip_cooldown")
 
-    if client_id is not None and client_secret is not None:
-        twitch_client = TwitchHelix(client_id=client_id, client_secret=client_secret, scopes=["channel:read:redemptions","channel:manage:redemptions"])
-        twitch_client.get_oauth()
-        oauth_token = twitch_client._oauth_token
-        debugpy.breakpoint()
-        print(oauth_token)
-        
-    scenes = obs.obs_frontend_get_scenes()
-    # print(f'Scene Objects: {scenes}')
+    # Crazy Keys Settings
+    crazy_keys_reward_title = obs.obs_data_get_string(settings, "crazy_keys_reward_title")
+    crazy_keys_reward_id = obs.obs_data_get_string(settings, "crazy_keys_reward_id")
+    crazy_keys_duration = obs.obs_data_get_int(settings, "crazy_keys_duration")
+    crazy_keys_cost = obs.obs_data_get_int(settings, "crazy_keys_cost")
+    crazy_keys_cooldown = obs.obs_data_get_int(settings, "crazy_keys_cooldown")
+
+    # Total Chaos Settings
+    total_chaos_reward_title = obs.obs_data_get_string(settings, "total_chaos_reward_title")
+    total_chaos_reward_id = obs.obs_data_get_string(settings, "total_chaos_reward_id")
+    total_chaos_duration = obs.obs_data_get_int(settings, "total_chaos_duration")
+    total_chaos_cost = obs.obs_data_get_int(settings, "total_chaos_cost")
+    total_chaos_cooldown = obs.obs_data_get_int(settings, "total_chaos_cooldown")
 
     ## Finding Scene Object
+    scenes = obs.obs_frontend_get_scenes()
+    transform_object = obs.obs_transform_info()
+
     for scene in scenes:
         name = obs.obs_source_get_name(scene)
         if name == scene_name:
             scene_object = obs.obs_scene_from_source(scene)
-            print(f'Scene Object: {scene_object}')
+            scene_items = obs.obs_scene_enum_items(scene_object)
 
-    scene_items = obs.obs_scene_enum_items(scene_object)
-    obs_trans_info = obs.obs_transform_info()
+            for item in scene_items:
+                check_source = obs.obs_sceneitem_get_source(item)
+                name = obs.obs_source_get_name(check_source)
 
-    for item in scene_items:
-        check_source = obs.obs_sceneitem_get_source(item)
-        name = obs.obs_source_get_name(check_source)
-        if name == source_name:
-            revert(item, obs_trans_info)
-            # invert(item, obs_trans_info)
-            # scene_item = obs.obs_sceneitem_get_info(item)
+    # Making sure that the Oauth Token is valid
+    token_status = validate_token()
+    if 'login' in token_status.keys():
+        print('You have successfully authenticated, redemptions will be read as they appear')
+        LIVE = True
+        redemption_thread = Thread(target=loop_over_award_redemptions)
+        redemption_thread.start()
+    else:
+        LIVE = False
+        print('Please refresh oauth token')
 
 def script_properties():
     global debug_mode
@@ -191,18 +241,35 @@ def script_properties():
     props = obs.obs_properties_create()
     obs.obs_properties_add_text(props, "user_id", "User ID", obs.OBS_TEXT_DEFAULT )
     obs.obs_properties_add_text(props, "client_id", "Client ID", obs.OBS_TEXT_DEFAULT )
-    obs.obs_properties_add_text(props, "client_secret", "Client Secret", obs.OBS_TEXT_DEFAULT )
-    # obs.obs_properties_add_editable_list(props, "twitch", "List of Rewards;Time to Reward;Cool Down", obs.OBS_EDITABLE_LIST_TYPE_STRINGS, obs.OBS_EDITABLE_LIST_TYPE_INT, obs.OBS_EDITABLE_LIST_TYPE_INT)
+    obs.obs_properties_add_text(props, "oauth_token", "Oauth Token", obs.OBS_TEXT_DEFAULT )
     
+    # Source Objects
     obs.obs_properties_add_text(props, "scene_name", "Scene Name", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "source_name", "Source Name", obs.OBS_TEXT_DEFAULT)
-    obs.obs_properties_add_text(props, "screen_flip_rewards_name", "Screen Flip Rewards name", obs.OBS_TEXT_DEFAULT)
-    obs.obs_properties_add_text(props, "crazy_keys_reward_name", "Crazy Key Rewards Name", obs.OBS_TEXT_DEFAULT)
+
+    # Screen Flip Properties
+    obs.obs_properties_add_text(props, "screen_flip_rewards_title", "Screen Flip Rewards Title", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "screen_flip_duration", "Screen Flip Duration (Seconds)", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "screen_flip_angle", "Screen Flip Angle [0,90,180,270]", obs.OBS_TEXT_DEFAULT)
-    obs.obs_properties_add_text(props, "crazy_keys_duration", "Crazy Keys Duration (Seconds)", obs.OBS_TEXT_DEFAULT)
-    obs.obs_properties_add_text(props, "total_chaos_duration", "Total Chaos Duration (Seconds)", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_text(props, "screen_flip_cost", "Screen Flip Cost (Points)", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_text(props, "screen_flip_cooldown", "Screen Flip Cooldown (Minutes)", obs.OBS_TEXT_DEFAULT)
 
+    # Crazy Keys Properties
+    obs.obs_properties_add_text(props, "crazy_keys_reward_title", "Crazy Key Rewards Title", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_text(props, "crazy_keys_duration", "Crazy Keys Duration (Seconds)", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_text(props, "crazy_keys_cost", "Crazy Keys Cost (Points)", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_text(props, "crazy_keys_cooldown", "Crazy Keys Cooldown (Minutes)", obs.OBS_TEXT_DEFAULT)
+
+    # Total Chaos Properties
+    obs.obs_properties_add_text(props, "total_chaos_reward_title", "Total Chaos Rewards Title", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_text(props, "total_chaos_duration", "Total Chaos Duration (Seconds)", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_text(props, "total_chaos_cost", "Total Chaos Cost (Points)", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_text(props, "total_chaos_cooldown", "Total Chaos Cooldown (Minutes)", obs.OBS_TEXT_DEFAULT)
+
+    obs.obs_properties_add_button(props, "button1", "Update the Script", make_the_rewards)
+    obs.obs_properties_add_button(props, "button2", "Stop Rewards Tracking", kill_rewards_redemption)
+    
+    
     return props
 
 def script_save(settings):
@@ -215,8 +282,6 @@ def script_load(settings):
 
     if debug_mode: print("[TS] Loaded script.")
 
-    # obs.timer_add(just_flip_thing, 5)
-
     if len(oauth_token) > 0 and len(client_id) > 0:
         # obs.timer_add(set_twitch, check_frequency * check_frequency_to_millisec)
         pass 
@@ -226,18 +291,8 @@ def script_unload():
     if debug_mode: print("[TS] Unloaded script.")
 
     # obs.timer_remove(set_twitch)
-    
-def query_rewards():
-    uri = f'https://api.twitch.tv/helix/channel_points/custom_rewards?broadcaster_id={user_id}'
-    headers = {
-        "Client-Id": client_id,
-        "Authorization": f"Bearer {oauth_token}"
-    }
-    return requests.get(uri, headers=headers).json()
 
-async def handle_reward_redemption():
-    pass
-
+# OBS Sources Formatting
 def invert(item, trans_info):
     obs.obs_sceneitem_get_info(item, trans_info)
     trans_info.__setattr__('rot', 180)
@@ -250,21 +305,136 @@ def revert(item, trans_info):
     trans_info.__setattr__('alignment', 5)
     obs.obs_sceneitem_set_info(item, trans_info)
 
-def just_flip_thing():  
-    global source_object
-    print('running')
-    obs.obs_source_set_async_rotation(source_object, 180)
+# Twitch Channel Rewards work
+def make_the_rewards(props, prop, *args, **kwargs):
+    global screen_flip_reward_id
+    global crazy_keys_reward_id    
+    global total_chaos_reward_id
+    print('This is clicking at least')
+    # Screen Flip Reward Registration
+    if screen_flip_reward_id is not None:
+        my_reward = create_custom_rewards(screen_flip_reward_title, screen_flip_cost, screen_flip_cooldown)
+        screen_flip_reward_id = my_reward['id']
+    else:
+        update_custom_rewards(screen_flip_reward_id, screen_flip_reward_title, screen_flip_cost, screen_flip_cooldown)
+    # Crazy Key Reward Registration
+    if crazy_keys_reward_id is not None:
+        my_reward = create_custom_rewards(crazy_keys_reward_title, crazy_keys_cost, crazy_keys_cooldown)
+        crazy_keys_reward_id = my_reward['id']
+    else:
+        update_custom_rewards(crazy_keys_reward_id, crazy_keys_reward_title, crazy_keys_cost, crazy_keys_cooldown)
+    # Total Chaos Rewards Registration
+    if total_chaos_reward_id is not None:
+        my_reward = create_custom_rewards(total_chaos_reward_title, total_chaos_cost, total_chaos_cooldown)
+        total_chaos_reward_id = my_reward['id']
+    else:
+        update_custom_rewards(total_chaos_reward_id, total_chaos_reward_title, total_chaos_cost, total_chaos_cooldown)
 
+def validate_token():
+    uri = 'https://id.twitch.tv/oauth2/validate'
+    headers = {
+        'Authorization': f'Bearer {oauth_token}'
+    }
+    valid_token = requests.get(uri, headers=headers).json()
+    return valid_token
 
-# Twitch Specific Work
-#async def twitch_channel_rewards():
-#    twitch_websocket_uri = 'wss://pubsub-edge.twitch.tv'
-#    async with websockets.connect(twitch_websocket_uri) as websocket:
-#        await websocket.send("PING")
-#        await websocket.recv()
+def get_custom_rewards():
+    uri = f'https://api.twitch.tv/helix/channel_points/custom_rewards?broadcaster_id={user_id}'
+    headers = {
+        "Client-Id": client_id,
+        "Authorization": f"Bearer {oauth_token}",
+        "Content-Type": "application/json"
+    }
+    rewards_requests = requests.get(uri, headers=headers).json()['data']
+    return rewards_requests
 
-# asyncio.get_event_loop().run_until_complete(twitch_channel_rewards())
+def create_custom_rewards(title, cost, cooldown):
+    uri = f'https://api.twitch.tv/helix/channel_points/custom_rewards?broadcaster_id={user_id}'
+    headers = {
+        "Client-Id": client_id,
+        "Authorization": f"Bearer {oauth_token}",
+        "Content-Type": "application/json"
+    }
+    data = json.dumps({
+        "title": title,
+        "cost": cost,
+        "is_enabled": True,
+        "is_global_cooldown_enabled": True,
+        "global_cooldown_seconds": cooldown * 60
+    })
+    create_request = requests.post(uri, headers=headers, data=data).json()['data']
+    return create_request
 
+def update_custom_rewards(id, title, cost, cooldown):
+    uri = f'https://api.twitch.tv/helix/channel_points/custom_rewards?broadcaster_id={user_id}&id={id}'
+    headers = {
+        "Client-Id": client_id,
+        "Authorization": f"Bearer {oauth_token}",
+        "Content-Type": "application/json"
+    }
+    data = json.dumps({
+        "title": title,
+        "cost": cost,
+        "is_enabled": True,
+        "is_global_cooldown_enabled": True,
+        "global_cooldown_seconds": cooldown * 60
+    })
+    update_request = requests.patch(uri, headers=headers, data=data).json()['data']
+    return update_request
 
-# debugpy.breakpoint()
-# print(f'End of script')
+def poll_for_redemptions(reward_id):
+    uri = f'https://api.twitch.tv/helix/channel_points/custom_rewards/redemptions?broadcaster_id={user_id}&reward_id={reward_id}&status=UNFULFILLED'
+    headers = {
+        "Client-Id": client_id,
+        "Authorization": f"Bearer {oauth_token}",
+        "Content-Type": "application/json"
+    }
+    redemptions_request = requests.get(uri, headers=headers).json()['data']
+    return redemptions_request
+
+def fulfill_rewards(reward_id, redemption_id):
+    uri = f'https://api.twitch.tv/helix/channel_points/custom_rewards/redemptions?broadcaster_id=${user_id}&reward_id=${reward_id}&id={redemption_id}'
+    headers = {
+        "Client-Id": client_id,
+        "Authorization": f"Bearer {oauth_token}",
+        "Content-Type": "application/json"
+    }
+    data = json.dumps({
+        "status": "FULFILLED"
+    })
+    fulfill_request = requests.patch(uri, headers=headers, data=data).json()['data']
+    return fulfill_request
+
+def triage_rewards(reward_type, reward_list):
+    if reward_list.__len__() > 0:
+        lucky_reward = reward_list[0]['reward']
+        lucky_id = reward_list[0]['id']
+        if reward_type == 'screen flip':
+            print(f'Screen Flip Method: {screen_flip_duration}, {screen_flip_angle}')
+            invert(scene_item, transform_object)
+            screen_flip(screen_flip_duration, screen_flip_duration)
+            revert(scene_item, transform_object)
+        elif reward_type == 'crazy_keys':
+            crazy_keys(crazy_keys_duration)
+        elif reward_type == 'total_chaos':
+            total_chaos(total_chaos_duration)
+        fulfill_rewards(lucky_id, lucky_reward['id'])
+    else:
+        print(f'No {reward_type} rewards at this time')
+
+def kill_rewards_redemption(props, prop, *args, **kwargs):
+    global LIVE
+    
+    print('Stopping Reward Redemptions. It is safe to close OBS')
+    LIVE = False
+
+def loop_over_award_redemptions():
+    while LIVE:
+        time.sleep(15)
+        print('Looking for rewards')
+        sf_redemptions = poll_for_redemptions(screen_flip_reward_id)
+        triage_rewards('screen flip', sf_redemptions)
+        ck_redemptions = poll_for_redemptions(crazy_keys_reward_id)
+        triage_rewards('crazy_keys', ck_redemptions)
+        tc_redemptions = poll_for_redemptions(total_chaos_reward_id)
+        triage_rewards('total_chaos', tc_redemptions)
