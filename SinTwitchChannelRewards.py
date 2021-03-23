@@ -258,8 +258,8 @@ def script_properties():
     obs.obs_properties_add_text(props, "source_name", "Source Name", obs.OBS_TEXT_DEFAULT)
 
     # Screen Flip Properties
-    screen_flip_reward_id = obs.obs_properties_add_text(props, "screen_flip_reward_id", "Screen Flip Rewards Id", obs.OBS_TEXT_DEFAULT)
-    obs.obs_property_set_visible(screen_flip_reward_id, False)
+    obs.obs_properties_add_text(props, "screen_flip_reward_id", "Screen Flip Rewards Id (Leave blank if not created)", obs.OBS_TEXT_DEFAULT)
+    # obs.obs_property_set_visible(screen_flip_reward_id, False)
     obs.obs_properties_add_text(props, "screen_flip_reward_title", "Screen Flip Rewards Title", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "screen_flip_duration", "Screen Flip Duration (Seconds)", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "screen_flip_angle", "Screen Flip Angle [0,90,180,270]", obs.OBS_TEXT_DEFAULT)
@@ -267,16 +267,16 @@ def script_properties():
     obs.obs_properties_add_text(props, "screen_flip_cooldown", "Screen Flip Cooldown (Minutes)", obs.OBS_TEXT_DEFAULT)
 
     # Crazy Keys Properties
-    crazy_keys_reward_id = obs.obs_properties_add_text(props, "crazy_keys_reward_id", "Crazy Keys Rewards Id", obs.OBS_TEXT_DEFAULT)
-    obs.obs_property_set_visible(crazy_keys_reward_id, False)
+    obs.obs_properties_add_text(props, "crazy_keys_reward_id", "Crazy Keys Rewards Id (Leave blank if not created)", obs.OBS_TEXT_DEFAULT)
+    # obs.obs_property_set_visible(crazy_keys_reward_id, False)
     obs.obs_properties_add_text(props, "crazy_keys_reward_title", "Crazy Key Rewards Title", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "crazy_keys_duration", "Crazy Keys Duration (Seconds)", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "crazy_keys_cost", "Crazy Keys Cost (Points)", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "crazy_keys_cooldown", "Crazy Keys Cooldown (Minutes)", obs.OBS_TEXT_DEFAULT)
 
     # Total Chaos Properties
-    total_chaos_reward_id = obs.obs_properties_add_text(props, "total_chaos_reward_id", "Total Chaos Rewards Id", obs.OBS_TEXT_DEFAULT)
-    obs.obs_property_set_visible(total_chaos_reward_id, False)
+    obs.obs_properties_add_text(props, "total_chaos_reward_id", "Total Chaos Rewards Id (Leave blank if not created)", obs.OBS_TEXT_DEFAULT)
+    # obs.obs_property_set_visible(total_chaos_reward_id, False)
     obs.obs_properties_add_text(props, "total_chaos_reward_title", "Total Chaos Rewards Title", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "total_chaos_duration", "Total Chaos Duration (Seconds)", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "total_chaos_cost", "Total Chaos Cost (Points)", obs.OBS_TEXT_DEFAULT)
