@@ -21,10 +21,16 @@ PS> pip install -r requirements.txt
 * All Feature durations and costs can be determined by the Streamer (or Moderators)
 * Redeemed points will be deducted from the redeeming user following a confirmation on behalf of the Streamer or moderators; points may be refunded if the redemption is declined
 
+#### Notes on usage
+* Currently, you need to have all fields filled out before "starting" the script.
+* Once all fields are completed, you can hit the "Update the Script" Button. This will create the rewards if they have not previously been created, and will update the rewards if they were previously created.
+* You must hit the "Stop Tracking Rewards" button before closing OBS since we are running a subprocess outside of OBS and will orphan the process if it is not killed via that button or the task manager. 
+* If other problems occur, enable debug mode and view the script logs.
+
 ## Features
-* Screen Flip - Rotate the Streamer's screen horizontally, vertically, or both for a period of time (minimum value (seconds) | maximum value (seconds))
-* Crazy Keys - Switch the WASD keys to be bound to a different key on WASD (minimum value (seconds) | maximum value (seconds))
-* Camera Whirl - REQUIRES CAMERA OVERLAY ENABLED - Change the orientation and position of the Streamer's camera [Rotate (Left, Right), Mirror, Flip, Spin] for a period of time (minimum value (seconds) | maximum value (seconds))
+* Screen Flip - Rotate the Streamer's screen horizontally, vertically, or both for a period of time value in seconds
+* Crazy Keys - Switch the WASD keys to be bound to a different key on WASD value in seconds
+* Camera Whirl - REQUIRES CAMERA OVERLAY ENABLED - Change the orientation and position of the Streamer's camera [Rotate (Left, Right), Mirror, Flip, Spin] for a period of time value in seconds
 * Total Chaos - Flip the screen, mix up the keys, make it pure chaos.
 
 ## Authentication

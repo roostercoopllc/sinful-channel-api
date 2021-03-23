@@ -125,20 +125,20 @@ def script_defaults(settings):
     obs.obs_data_set_default_string(settings, "screen_flip_reward_title", screen_flip_reward_title)
     obs.obs_data_set_default_int(settings, "screen_flip_duration", screen_flip_duration)
     obs.obs_data_set_default_int(settings, "screen_flip_angle", screen_flip_angle)
-    obs.obs_data_set_default_int(settings, "screen_flip_cost", screen_flip_angle)
-    obs.obs_data_set_default_int(settings, "screen_flip_cooldown", screen_flip_angle)
+    obs.obs_data_set_default_int(settings, "screen_flip_cost", screen_flip_cost)
+    obs.obs_data_set_default_int(settings, "screen_flip_cooldown", screen_flip_cooldown)
     
     # Crazy Keys Data
     obs.obs_data_set_default_string(settings, "crazy_keys_reward_title", crazy_keys_reward_title)
     obs.obs_data_set_default_int(settings, "crazy_keys_duration", crazy_keys_duration)
-    obs.obs_data_set_default_int(settings, "crazy_keys_cost", crazy_keys_duration)
-    obs.obs_data_set_default_int(settings, "crazy_keys_cooldown", crazy_keys_duration)
+    obs.obs_data_set_default_int(settings, "crazy_keys_cost", crazy_keys_cost)
+    obs.obs_data_set_default_int(settings, "crazy_keys_cooldown", crazy_keys_cooldown)
     
     # Total Chaos Data
     obs.obs_data_set_default_string(settings, "total_chaos_reward_title", total_chaos_reward_title)
     obs.obs_data_set_default_int(settings, "total_chaos_duration", total_chaos_duration)
-    obs.obs_data_set_default_int(settings, "total_chaos_cost", total_chaos_duration)
-    obs.obs_data_set_default_int(settings, "total_chaos_cooldown", total_chaos_duration)
+    obs.obs_data_set_default_int(settings, "total_chaos_cost", total_chaos_cost)
+    obs.obs_data_set_default_int(settings, "total_chaos_cooldown", total_chaos_cooldown)
 
 def script_description():
     return "<b>Redeem rewards from twich channel</b>" + \
@@ -147,6 +147,7 @@ def script_description():
 
 def script_update(settings):
     global LIVE
+    global debug_mode
     global user_id
     global client_id
     global oauth_token
@@ -190,24 +191,27 @@ def script_update(settings):
     # Screen Flip Settings
     screen_flip_reward_title = obs.obs_data_get_string(settings, "screen_flip_reward_title")
     screen_flip_reward_id = obs.obs_data_get_string(settings, "screen_flip_reward_id")
-    screen_flip_duration = obs.obs_data_get_int(settings, "screen_flip_duration")
-    screen_flip_angle = obs.obs_data_get_int(settings, "screen_flip_angle")
-    screen_flip_cost = obs.obs_data_get_int(settings, "screen_flip_cost")
-    screen_flip_cooldown = obs.obs_data_get_int(settings, "screen_flip_cooldown")
+    screen_flip_duration = int(obs.obs_data_get_string(settings, "screen_flip_duration"))
+    screen_flip_angle = int(obs.obs_data_get_string(settings, "screen_flip_angle"))
+    screen_flip_cost = int(obs.obs_data_get_string(settings, "screen_flip_cost"))
+    screen_flip_cooldown = int(obs.obs_data_get_string(settings, "screen_flip_cooldown"))
 
     # Crazy Keys Settings
     crazy_keys_reward_title = obs.obs_data_get_string(settings, "crazy_keys_reward_title")
     crazy_keys_reward_id = obs.obs_data_get_string(settings, "crazy_keys_reward_id")
-    crazy_keys_duration = obs.obs_data_get_int(settings, "crazy_keys_duration")
-    crazy_keys_cost = obs.obs_data_get_int(settings, "crazy_keys_cost")
-    crazy_keys_cooldown = obs.obs_data_get_int(settings, "crazy_keys_cooldown")
+    crazy_keys_duration = int(obs.obs_data_get_string(settings, "crazy_keys_duration"))
+    crazy_keys_cost = int(obs.obs_data_get_string(settings, "crazy_keys_cost"))
+    crazy_keys_cooldown = int(obs.obs_data_get_string(settings, "crazy_keys_cooldown"))
 
     # Total Chaos Settings
     total_chaos_reward_title = obs.obs_data_get_string(settings, "total_chaos_reward_title")
     total_chaos_reward_id = obs.obs_data_get_string(settings, "total_chaos_reward_id")
-    total_chaos_duration = obs.obs_data_get_int(settings, "total_chaos_duration")
-    total_chaos_cost = obs.obs_data_get_int(settings, "total_chaos_cost")
-    total_chaos_cooldown = obs.obs_data_get_int(settings, "total_chaos_cooldown")
+    total_chaos_duration = int(obs.obs_data_get_string(settings, "total_chaos_duration"))
+    total_chaos_cost = int(obs.obs_data_get_string(settings, "total_chaos_cost"))
+    total_chaos_cooldown = int(obs.obs_data_get_string(settings, "total_chaos_cooldown"))
+
+    # Set Debug mode
+    debug_mode = obs.obs_data_get_bool(settings, "debug_mode")
 
     ## Finding Scene Object
     scenes = obs.obs_frontend_get_scenes()
@@ -248,7 +252,7 @@ def script_properties():
     obs.obs_properties_add_text(props, "source_name", "Source Name", obs.OBS_TEXT_DEFAULT)
 
     # Screen Flip Properties
-    obs.obs_properties_add_text(props, "screen_flip_rewards_title", "Screen Flip Rewards Title", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_text(props, "screen_flip_reward_title", "Screen Flip Rewards Title", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "screen_flip_duration", "Screen Flip Duration (Seconds)", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "screen_flip_angle", "Screen Flip Angle [0,90,180,270]", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "screen_flip_cost", "Screen Flip Cost (Points)", obs.OBS_TEXT_DEFAULT)
@@ -268,8 +272,8 @@ def script_properties():
 
     obs.obs_properties_add_button(props, "button1", "Update the Script", make_the_rewards)
     obs.obs_properties_add_button(props, "button2", "Stop Rewards Tracking", kill_rewards_redemption)
-    
-    
+    obs.obs_properties_add_bool(props,"debug_mode","Debug Mode")
+
     return props
 
 def script_save(settings):
@@ -336,6 +340,7 @@ def validate_token():
         'Authorization': f'Bearer {oauth_token}'
     }
     valid_token = requests.get(uri, headers=headers).json()
+    if debug_mode: print(f'valid token request: {valid_token}')
     return valid_token
 
 def get_custom_rewards():
@@ -346,6 +351,7 @@ def get_custom_rewards():
         "Content-Type": "application/json"
     }
     rewards_requests = requests.get(uri, headers=headers).json()['data']
+    if debug_mode: print(f'rewards request: {rewards_requests}')
     return rewards_requests
 
 def create_custom_rewards(title, cost, cooldown):
@@ -363,6 +369,7 @@ def create_custom_rewards(title, cost, cooldown):
         "global_cooldown_seconds": cooldown * 60
     })
     create_request = requests.post(uri, headers=headers, data=data).json()['data']
+    if debug_mode: print(f'create request: {create_request}')
     return create_request
 
 def update_custom_rewards(id, title, cost, cooldown):
@@ -380,6 +387,7 @@ def update_custom_rewards(id, title, cost, cooldown):
         "global_cooldown_seconds": cooldown * 60
     })
     update_request = requests.patch(uri, headers=headers, data=data).json()['data']
+    if debug_mode: print(f'update request: {update_request}')
     return update_request
 
 def poll_for_redemptions(reward_id):
@@ -390,6 +398,7 @@ def poll_for_redemptions(reward_id):
         "Content-Type": "application/json"
     }
     redemptions_request = requests.get(uri, headers=headers).json()['data']
+    if debug_mode: print(f'redemptions request: {redemptions_request}')
     return redemptions_request
 
 def fulfill_rewards(reward_id, redemption_id):
@@ -403,6 +412,7 @@ def fulfill_rewards(reward_id, redemption_id):
         "status": "FULFILLED"
     })
     fulfill_request = requests.patch(uri, headers=headers, data=data).json()['data']
+    if debug_mode: print(f'fulfill request: {fulfill_request}')
     return fulfill_request
 
 def triage_rewards(reward_type, reward_list):
