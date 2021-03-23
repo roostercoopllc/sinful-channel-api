@@ -243,6 +243,9 @@ def script_update(settings):
 
 def script_properties():
     global debug_mode
+    global screen_flip_reward_id
+    global crazy_keys_reward_id
+    global total_chaos_reward_id
     if debug_mode: print("[Debug] Loaded Defaults")
 
     props = obs.obs_properties_create()
@@ -255,6 +258,8 @@ def script_properties():
     obs.obs_properties_add_text(props, "source_name", "Source Name", obs.OBS_TEXT_DEFAULT)
 
     # Screen Flip Properties
+    screen_flip_reward_id = obs.obs_properties_add_text(props, "screen_flip_reward_id", "Screen Flip Rewards Id", obs.OBS_TEXT_DEFAULT)
+    obs.obs_property_set_visible(screen_flip_reward_id, False)
     obs.obs_properties_add_text(props, "screen_flip_reward_title", "Screen Flip Rewards Title", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "screen_flip_duration", "Screen Flip Duration (Seconds)", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "screen_flip_angle", "Screen Flip Angle [0,90,180,270]", obs.OBS_TEXT_DEFAULT)
@@ -262,12 +267,16 @@ def script_properties():
     obs.obs_properties_add_text(props, "screen_flip_cooldown", "Screen Flip Cooldown (Minutes)", obs.OBS_TEXT_DEFAULT)
 
     # Crazy Keys Properties
+    crazy_keys_reward_id = obs.obs_properties_add_text(props, "crazy_keys_reward_id", "Crazy Keys Rewards Id", obs.OBS_TEXT_DEFAULT)
+    obs.obs_property_set_visible(crazy_keys_reward_id, False)
     obs.obs_properties_add_text(props, "crazy_keys_reward_title", "Crazy Key Rewards Title", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "crazy_keys_duration", "Crazy Keys Duration (Seconds)", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "crazy_keys_cost", "Crazy Keys Cost (Points)", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "crazy_keys_cooldown", "Crazy Keys Cooldown (Minutes)", obs.OBS_TEXT_DEFAULT)
 
     # Total Chaos Properties
+    total_chaos_reward_id = obs.obs_properties_add_text(props, "total_chaos_reward_id", "Total Chaos Rewards Id", obs.OBS_TEXT_DEFAULT)
+    obs.obs_property_set_visible(total_chaos_reward_id, False)
     obs.obs_properties_add_text(props, "total_chaos_reward_title", "Total Chaos Rewards Title", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "total_chaos_duration", "Total Chaos Duration (Seconds)", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "total_chaos_cost", "Total Chaos Cost (Points)", obs.OBS_TEXT_DEFAULT)
@@ -409,9 +418,11 @@ def poll_for_redemptions(reward_id):
         "Authorization": f"Bearer {oauth_token}",
         "Content-Type": "application/json"
     }
-    redemptions_request = requests.get(uri, headers=headers).json()['data']
+    redemptions_request = requests.get(uri, headers=headers).json()
+    if 'data' in redemptions_request.keys():
+        return redemptions_request
     if debug_mode: print(f'redemptions request: {redemptions_request}')
-    return redemptions_request
+    return []
 
 def fulfill_rewards(reward_id, redemption_id):
     uri = f'https://api.twitch.tv/helix/channel_points/custom_rewards/redemptions?broadcaster_id=${user_id}&reward_id=${reward_id}&id={redemption_id}'
