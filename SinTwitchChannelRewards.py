@@ -439,6 +439,8 @@ def fulfill_rewards(reward_id, redemption_id):
     return fulfill_request
 
 def triage_rewards(reward_type, reward_list):
+    if debug_mode: print(f'Reward Type: {reward_type}')
+    if debug_mode: print(f'Crazy Keys Reward Failed: {reward_list}')
     if reward_list.__len__() > 0:
         lucky_reward = reward_list[0]['reward']
         lucky_id = reward_list[0]['id']
