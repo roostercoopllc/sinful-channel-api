@@ -212,6 +212,7 @@ def script_update(settings):
 
     # Set Debug mode
     debug_mode = obs.obs_data_get_bool(settings, "debug_mode")
+    LIVE = obs.obs_data_get_bool(settings, "LIVE")
 
     ## Finding Scene Object
     scenes = obs.obs_frontend_get_scenes()
@@ -229,14 +230,14 @@ def script_update(settings):
 
     # Making sure that the Oauth Token is valid
     token_status = validate_token()
-    if 'login' in token_status.keys():
+    if 'login' in token_status.keys() and LIVE:
         print('You have successfully authenticated, redemptions will be read as they appear')
-        LIVE = True
         redemption_thread = Thread(target=loop_over_award_redemptions)
         redemption_thread.start()
-    else:
-        LIVE = False
+    elif LIVE:
         print('Please refresh oauth token')
+    else:
+        print('Oauth Token is valid, ready to redeem rewards')
 
 def script_properties():
     global debug_mode
@@ -271,7 +272,7 @@ def script_properties():
     obs.obs_properties_add_text(props, "total_chaos_cooldown", "Total Chaos Cooldown (Minutes)", obs.OBS_TEXT_DEFAULT)
 
     obs.obs_properties_add_button(props, "button1", "Update the Script", make_the_rewards)
-    obs.obs_properties_add_button(props, "button2", "Stop Rewards Tracking", kill_rewards_redemption)
+    obs.obs_properties_add_bool(props,"LIVE","Redeem Rewards")
     obs.obs_properties_add_bool(props,"debug_mode","Debug Mode")
 
     return props
