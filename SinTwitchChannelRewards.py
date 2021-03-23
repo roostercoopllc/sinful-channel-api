@@ -159,8 +159,6 @@ def script_update(settings):
     global source_name
     global source_object
 
-    global transform_object
-
     global screen_flip_reward_title
     global screen_flip_reward_id
     global screen_flip_duration
@@ -448,9 +446,9 @@ def triage_rewards(reward_type, reward_list):
         lucky_id = reward_list['data'][0]['id']
         if reward_type == 'screen flip':
             print(f'Screen Flip Method: {screen_flip_duration}, {screen_flip_angle}')
-            invert(scene_item, transform_object)
+            invert(scene_item)
             screen_flip(screen_flip_duration, screen_flip_angle)
-            revert(scene_item, transform_object)
+            revert(scene_item)
         elif reward_type == 'crazy_keys':
             print(f'Crazy Keys Method: {crazy_keys_duration}')
             crazy_keys(crazy_keys_duration)
