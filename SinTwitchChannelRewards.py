@@ -19,12 +19,13 @@
 #                   :
 # python_version    : 3.6
 # ==============================================================================
-import asyncio
 import time
 import random
 import json
+from threading import Thread
 
 import obspython as obs
+from requests.api import head, request
 import rotatescreen
 import keyboard
 import requests
@@ -32,10 +33,10 @@ import requests
 import debugpy
 
 # Working Methods
-async def screen_flip(duration, angle):
+def screen_flip(duration, angle):
     screen = rotatescreen.get_primary_display()
     screen.rotate_to(angle)
-    asyncio.sleep(duration)
+    time.sleep(duration)
     screen.rotate_to(0)
 
 def crazy_keys(duration):
@@ -222,9 +223,16 @@ def script_update(settings):
                 check_source = obs.obs_sceneitem_get_source(item)
                 name = obs.obs_source_get_name(check_source)
 
-    if oauth_token is not None:
+    # Making sure that the Oauth Token is valid
+    token_status = validate_token()
+    if 'login' in token_status.keys():
+        print('You have successfully authenticated, redemptions will be read as they appear')
         LIVE = True
-        loop_over_award_redemptions()
+        redemption_thread = Thread(target=loop_over_award_redemptions)
+        redemption_thread.start()
+    else:
+        LIVE = False
+        print('Please refresh oauth token')
 
 def script_properties():
     global debug_mode
@@ -259,6 +267,8 @@ def script_properties():
     obs.obs_properties_add_text(props, "total_chaos_cooldown", "Total Chaos Cooldown (Minutes)", obs.OBS_TEXT_DEFAULT)
 
     obs.obs_properties_add_button(props, "button1", "Update the Script", make_the_rewards)
+    obs.obs_properties_add_button(props, "button2", "Stop Rewards Tracking", kill_rewards_redemption)
+    
     
     return props
 
@@ -319,6 +329,14 @@ def make_the_rewards(props, prop, *args, **kwargs):
         total_chaos_reward_id = my_reward['id']
     else:
         update_custom_rewards(total_chaos_reward_id, total_chaos_reward_title, total_chaos_cost, total_chaos_cooldown)
+
+def validate_token():
+    uri = 'https://id.twitch.tv/oauth2/validate'
+    headers = {
+        'Authorization': f'Bearer {oauth_token}'
+    }
+    valid_token = requests.get(uri, headers=headers).json()
+    return valid_token
 
 def get_custom_rewards():
     uri = f'https://api.twitch.tv/helix/channel_points/custom_rewards?broadcaster_id={user_id}'
@@ -404,9 +422,15 @@ def triage_rewards(reward_type, reward_list):
     else:
         print(f'No {reward_type} rewards at this time')
 
-async def loop_over_award_redemptions():
+def kill_rewards_redemption(props, prop, *args, **kwargs):
+    global LIVE
+    
+    print('Stopping Reward Redemptions. It is safe to close OBS')
+    LIVE = False
+
+def loop_over_award_redemptions():
     while LIVE:
-        asyncio.sleep(15)
+        time.sleep(15)
         print('Looking for rewards')
         sf_redemptions = poll_for_redemptions(screen_flip_reward_id)
         triage_rewards('screen flip', sf_redemptions)
