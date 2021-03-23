@@ -216,7 +216,6 @@ def script_update(settings):
 
     ## Finding Scene Object
     scenes = obs.obs_frontend_get_scenes()
-    transform_object = obs.obs_transform_info()
 
     for scene in scenes:
         name = obs.obs_source_get_name(scene)
@@ -309,13 +308,15 @@ def script_unload():
     # obs.timer_remove(set_twitch)
 
 # OBS Sources Formatting
-def invert(item, trans_info):
+def invert(item):
+    trans_info = obs.obs_transform_info()
     obs.obs_sceneitem_get_info(item, trans_info)
     trans_info.__setattr__('rot', 180)
     trans_info.__setattr__('alignment', 10)
     obs.obs_sceneitem_set_info(item, trans_info)
 
-def revert(item, trans_info):
+def revert(item):
+    trans_info = obs.obs_transform_info()
     obs.obs_sceneitem_get_info(item, trans_info)
     trans_info.__setattr__('rot', 0)
     trans_info.__setattr__('alignment', 5)
