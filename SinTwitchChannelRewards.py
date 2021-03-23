@@ -442,8 +442,8 @@ def triage_rewards(reward_type, reward_list):
     if debug_mode: print(f'Reward Type: {reward_type}')
     if debug_mode: print(f'{reward_type} Reward Type: {reward_list}')
     if reward_list['data'].__len__() > 0:
-        lucky_reward = reward_list[0]['reward']
-        lucky_id = reward_list[0]['id']
+        lucky_reward = reward_list['data'][0]['reward']
+        lucky_id = reward_list['data'][0]['id']
         if reward_type == 'screen flip':
             print(f'Screen Flip Method: {screen_flip_duration}, {screen_flip_angle}')
             invert(scene_item, transform_object)
