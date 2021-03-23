@@ -426,18 +426,14 @@ def triage_rewards(reward_type, reward_list):
             screen_flip(screen_flip_duration, screen_flip_duration)
             revert(scene_item, transform_object)
         elif reward_type == 'crazy_keys':
+            print(f'Crazy Keys Method: {crazy_keys_duration}')
             crazy_keys(crazy_keys_duration)
         elif reward_type == 'total_chaos':
+            print(f'Total Chaos Method: {total_chaos_duration}')
             total_chaos(total_chaos_duration)
         fulfill_rewards(lucky_id, lucky_reward['id'])
     else:
         print(f'No {reward_type} rewards at this time')
-
-def kill_rewards_redemption(props, prop, *args, **kwargs):
-    global LIVE
-    
-    print('Stopping Reward Redemptions. It is safe to close OBS')
-    LIVE = False
 
 def loop_over_award_redemptions():
     while LIVE:
