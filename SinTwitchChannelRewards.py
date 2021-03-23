@@ -34,6 +34,7 @@ import debugpy
 
 # Working Methods
 def screen_flip(duration, angle):
+    invert(scene_item)
     screen = rotatescreen.get_primary_display()
     screen.rotate_to(angle)
     time.sleep(duration)
@@ -70,10 +71,10 @@ def brightness_blast():
     pass
 
 def total_chaos(duration):
-    invert(scene_item)
-    screen_flip(duration, 180)
-    revert(scene_item)
     crazy_keys(duration)
+    invert(scene_item,transform_object)
+    screen_flip(duration, 180)
+    revert(scene_item, transform_object)
     
 # Configuration to load with script
 LIVE = False
@@ -107,6 +108,8 @@ total_chaos_reward_id = None
 total_chaos_duration = 120
 total_chaos_cost = 5000
 total_chaos_cooldown = 5
+
+transform_object = None
 
 # OBS specific scripts
 def script_defaults(settings):
@@ -180,6 +183,8 @@ def script_update(settings):
     global total_chaos_cost
     global total_chaos_cooldown
 
+    global transform_object
+
     user_id = obs.obs_data_get_string(settings, 'user_id')
     client_id = obs.obs_data_get_string(settings, 'client_id')
     oauth_token = obs.obs_data_get_string(settings, "oauth_token")
@@ -216,6 +221,7 @@ def script_update(settings):
 
     ## Finding Scene Object
     scenes = obs.obs_frontend_get_scenes()
+    transform_object = obs.obs_transform_info()
 
     for scene in scenes:
         name = obs.obs_source_get_name(scene)
@@ -308,19 +314,25 @@ def script_unload():
     # obs.timer_remove(set_twitch)
 
 # OBS Sources Formatting
-def invert(item):
-    trans_info = obs.obs_transform_info()
-    obs.obs_sceneitem_get_info(item, trans_info)
-    trans_info.__setattr__('rot', 180)
-    trans_info.__setattr__('alignment', 10)
-    obs.obs_sceneitem_set_info(item, trans_info)
+def invert(item, trans_info):
+    if trans_info is not None:
+        obs.obs_sceneitem_get_info(item, trans_info)
+        trans_info.__setattr__('rot', 180)
+        trans_info.__setattr__('alignment', 10)
+        obs.obs_sceneitem_set_info(item, trans_info)
+    else:
+        if debug_mode: print(f'Transform Object: {transform_object}')
 
-def revert(item):
-    trans_info = obs.obs_transform_info()
-    obs.obs_sceneitem_get_info(item, trans_info)
-    trans_info.__setattr__('rot', 0)
-    trans_info.__setattr__('alignment', 5)
-    obs.obs_sceneitem_set_info(item, trans_info)
+
+def revert(item, trans_info):
+    if trans_info is not None:
+        trans_info = obs.obs_transform_info()
+        obs.obs_sceneitem_get_info(item, trans_info)
+        trans_info.__setattr__('rot', 0)
+        trans_info.__setattr__('alignment', 5)
+        obs.obs_sceneitem_set_info(item, trans_info)
+    else:
+        if debug_mode: print(f'Transform Object: {transform_object}')
 
 # Twitch Channel Rewards work
 def make_the_rewards(props, prop, *args, **kwargs):
@@ -447,23 +459,25 @@ def triage_rewards(reward_type, reward_list):
         lucky_reward = reward_list['data'][0]['reward']
         lucky_id = reward_list['data'][0]['id']
         if reward_type == 'screen flip':
-            print(f'Screen Flip Method: {screen_flip_duration}, {screen_flip_angle}')
-            invert(scene_item)
+            if debug_mode: print(f'Screen Flip Method: {screen_flip_duration}, {screen_flip_angle}')
+            invert(scene_item, transform_object)
             screen_flip(screen_flip_duration, screen_flip_angle)
             revert(scene_item)
         elif reward_type == 'crazy_keys':
-            print(f'Crazy Keys Method: {crazy_keys_duration}')
+            if debug_mode: print(f'Crazy Keys Method: {crazy_keys_duration}')
             crazy_keys(crazy_keys_duration)
         elif reward_type == 'total_chaos':
-            print(f'Total Chaos Method: {total_chaos_duration}')
+            if debug_mode: print(f'Total Chaos Method: {total_chaos_duration}')
             total_chaos(total_chaos_duration)
-        fulfill_rewards(lucky_id, lucky_reward['id'])
+        # The auto-fulfillment cannot be accomplished automatically because of the following error
+        # fulfill request: {'error': 'Unauthorized', 'status': 401, 'message': 'incorrect user authorization'}
+        # fulfill_rewards(lucky_id, lucky_reward['id'])
     else:
         print(f'No {reward_type} rewards at this time')
 
 def loop_over_award_redemptions():
     while LIVE:
-        time.sleep(15)
+        time.sleep(30)
         print('Looking for rewards')
         sf_redemptions = poll_for_redemptions(screen_flip_reward_id)
         triage_rewards('screen flip', sf_redemptions)
