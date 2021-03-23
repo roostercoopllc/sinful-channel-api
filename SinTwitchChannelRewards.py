@@ -233,6 +233,8 @@ def script_update(settings):
             for item in scene_items:
                 check_source = obs.obs_sceneitem_get_source(item)
                 name = obs.obs_source_get_name(check_source)
+                if name == source_name:
+                    scene_item = item
 
     # Making sure that the Oauth Token is valid
     token_status = validate_token()
@@ -462,7 +464,7 @@ def triage_rewards(reward_type, reward_list):
         if reward_type == 'screen flip':
             if debug_mode: 
                 print(f'Screen Flip Method: {screen_flip_duration}, {screen_flip_angle}')
-                print(f'Transformation Object: {transform_object}')
+                print(f'Scene Item: {scene_item}, Transformation Object: {transform_object}')
             invert(scene_item, transform_object)
             screen_flip(screen_flip_duration, screen_flip_angle)
             revert(scene_item, transform_object)
