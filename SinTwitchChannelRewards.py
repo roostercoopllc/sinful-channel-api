@@ -23,6 +23,7 @@ import time
 import random
 import json
 from threading import Thread
+from datetime import datetime
 
 import obspython as obs
 from requests.api import head, request
@@ -46,13 +47,19 @@ def crazy_keys(duration):
     key_list = ['a', 's', 'd', 'w']
     available_list = ['a', 's', 'd', 'w']
     for k in key_list: 
-        print('this is my method')
         chosen_key = random.choice(available_list)
         keyboard.remap_key(k, chosen_key)
         available_list.pop(available_list.index(chosen_key))
     time.sleep(duration)
     keyboard.unhook_all()
 
+def total_chaos(duration):
+    crazy_keys(duration)
+    invert(scene_item, transform_object)
+    screen_flip(duration, 180)
+    revert(scene_item, transform_object)
+    
+# Future Rewards
 def camera_whirl():
     screen = rotatescreen.get_primary_display()
     start_pos = screen.current_orientation
@@ -71,12 +78,6 @@ def grey_grumpkin():
 def brightness_blast():
     pass
 
-def total_chaos(duration):
-    crazy_keys(duration)
-    invert(scene_item,transform_object)
-    screen_flip(duration, 180)
-    revert(scene_item, transform_object)
-    
 # Configuration to load with script
 LIVE = False
 
@@ -303,9 +304,7 @@ def script_save(settings):
 
 def script_load(settings):
     global debug_mode
-
     if debug_mode: print("[TS] Loaded script.")
-
     if len(oauth_token) > 0 and len(client_id) > 0:
         # obs.timer_add(set_twitch, check_frequency * check_frequency_to_millisec)
         pass 
@@ -313,8 +312,6 @@ def script_load(settings):
 def script_unload():
     global debug_mode
     if debug_mode: print("[TS] Unloaded script.")
-
-    # obs.timer_remove(set_twitch)
 
 # OBS Sources Formatting
 def invert(item, trans_info):
@@ -325,7 +322,6 @@ def invert(item, trans_info):
         obs.obs_sceneitem_set_info(item, trans_info)
     else:
         if debug_mode: print(f'Transform Object: {transform_object}')
-
 
 def revert(item, trans_info):
     if trans_info is not None:
@@ -342,7 +338,7 @@ def make_the_rewards(props, prop, *args, **kwargs):
     global screen_flip_reward_id
     global crazy_keys_reward_id    
     global total_chaos_reward_id
-    print('This is clicking at least')
+    if debug_mode: print('Attempting to Create or Update the Rewards')
     # Screen Flip Reward Registration
     if screen_flip_reward_id is not None:
         my_reward = create_custom_rewards(screen_flip_reward_title, screen_flip_cost, screen_flip_cooldown)
@@ -483,7 +479,7 @@ def triage_rewards(reward_type, reward_list):
 def loop_over_award_redemptions():
     while LIVE:
         time.sleep(30)
-        print('Looking for rewards')
+        print(f'Looking for rewards {datetime.now()}')
         sf_redemptions = poll_for_redemptions(screen_flip_reward_id)
         triage_rewards('screen flip', sf_redemptions)
         ck_redemptions = poll_for_redemptions(crazy_keys_reward_id)
