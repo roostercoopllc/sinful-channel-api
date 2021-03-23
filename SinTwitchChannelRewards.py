@@ -426,6 +426,7 @@ def poll_for_redemptions(reward_id):
     return []
 
 def fulfill_rewards(reward_id, redemption_id):
+    if debug_mode: print(f'Fulfilling the rewards with the following information: User Id - {user_id}; Reward Id - {reward_id}; Redemption Id {redemption_id}')
     uri = f'https://api.twitch.tv/helix/channel_points/custom_rewards/redemptions?broadcaster_id=${user_id}&reward_id=${reward_id}&id={redemption_id}'
     headers = {
         "Client-Id": client_id,
