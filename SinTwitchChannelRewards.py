@@ -271,7 +271,7 @@ def script_properties():
     obs.obs_properties_add_text(props, "total_chaos_cost", "Total Chaos Cost (Points)", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_text(props, "total_chaos_cooldown", "Total Chaos Cooldown (Minutes)", obs.OBS_TEXT_DEFAULT)
 
-    obs.obs_properties_add_button(props, "button1", "Update the Script", make_the_rewards)
+    obs.obs_properties_add_button(props, "button1", "Update the reward values", make_the_rewards)
     obs.obs_properties_add_bool(props,"LIVE","Redeem Rewards")
     obs.obs_properties_add_bool(props,"debug_mode","Debug Mode")
 
