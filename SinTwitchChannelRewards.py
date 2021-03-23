@@ -440,8 +440,8 @@ def fulfill_rewards(reward_id, redemption_id):
 
 def triage_rewards(reward_type, reward_list):
     if debug_mode: print(f'Reward Type: {reward_type}')
-    if debug_mode: print(f'Crazy Keys Reward Failed: {reward_list}')
-    if reward_list.__len__() > 0:
+    if debug_mode: print(f'{reward_type} Reward Failed: {reward_list}')
+    if reward_list.__len__() > 0 and 'data' not in reward_list.keys():
         lucky_reward = reward_list[0]['reward']
         lucky_id = reward_list[0]['id']
         if reward_type == 'screen flip':
