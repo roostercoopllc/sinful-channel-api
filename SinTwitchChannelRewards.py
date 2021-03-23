@@ -447,7 +447,7 @@ def triage_rewards(reward_type, reward_list):
         if reward_type == 'screen flip':
             print(f'Screen Flip Method: {screen_flip_duration}, {screen_flip_angle}')
             invert(scene_item, transform_object)
-            screen_flip(screen_flip_duration, screen_flip_duration)
+            screen_flip(screen_flip_duration, screen_flip_angle)
             revert(scene_item, transform_object)
         elif reward_type == 'crazy_keys':
             print(f'Crazy Keys Method: {crazy_keys_duration}')
