@@ -236,6 +236,8 @@ def script_update(settings):
         redemption_thread.start()
     elif LIVE:
         print('Please refresh oauth token')
+    elif 'login' not in token_status.keys():
+        print('The Oauth Token has expired or is invalid')
     else:
         print('Oauth Token is valid, ready to redeem rewards')
 
@@ -319,19 +321,28 @@ def make_the_rewards(props, prop, *args, **kwargs):
     # Screen Flip Reward Registration
     if screen_flip_reward_id is not None:
         my_reward = create_custom_rewards(screen_flip_reward_title, screen_flip_cost, screen_flip_cooldown)
-        screen_flip_reward_id = my_reward['id']
+        if len(my_reward) > 0:
+            screen_flip_reward_id = my_reward[0]['id']
+        else:
+            if debug_mode: print(f'Screen Flip Reward Failed: {my_reward}')
     else:
         update_custom_rewards(screen_flip_reward_id, screen_flip_reward_title, screen_flip_cost, screen_flip_cooldown)
     # Crazy Key Reward Registration
     if crazy_keys_reward_id is not None:
-        my_reward = create_custom_rewards(crazy_keys_reward_title, crazy_keys_cost, crazy_keys_cooldown)
-        crazy_keys_reward_id = my_reward['id']
+        if len(my_reward) > 0:
+            my_reward = create_custom_rewards(crazy_keys_reward_title, crazy_keys_cost, crazy_keys_cooldown)
+            crazy_keys_reward_id = my_reward[0]['id']
+        else:
+            if debug_mode: print(f'Crazy Keys Reward Failed: {my_reward}')
     else:
         update_custom_rewards(crazy_keys_reward_id, crazy_keys_reward_title, crazy_keys_cost, crazy_keys_cooldown)
     # Total Chaos Rewards Registration
     if total_chaos_reward_id is not None:
-        my_reward = create_custom_rewards(total_chaos_reward_title, total_chaos_cost, total_chaos_cooldown)
-        total_chaos_reward_id = my_reward['id']
+        if len(my_reward) > 0:
+            my_reward = create_custom_rewards(total_chaos_reward_title, total_chaos_cost, total_chaos_cooldown)[0]
+            total_chaos_reward_id = my_reward[0]['id']
+        else:
+            if debug_mode: print(f'Total Chaos Reward Failed: {my_reward}')
     else:
         update_custom_rewards(total_chaos_reward_id, total_chaos_reward_title, total_chaos_cost, total_chaos_cooldown)
 
