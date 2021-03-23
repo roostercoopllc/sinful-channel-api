@@ -70,7 +70,9 @@ def brightness_blast():
     pass
 
 def total_chaos(duration):
+    invert(scene_item)
     screen_flip(duration, 180)
+    revert(scene_item)
     crazy_keys(duration)
     
 # Configuration to load with script
