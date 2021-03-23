@@ -460,10 +460,12 @@ def triage_rewards(reward_type, reward_list):
         lucky_reward = reward_list['data'][0]['reward']
         lucky_id = reward_list['data'][0]['id']
         if reward_type == 'screen flip':
-            if debug_mode: print(f'Screen Flip Method: {screen_flip_duration}, {screen_flip_angle}')
+            if debug_mode: 
+                print(f'Screen Flip Method: {screen_flip_duration}, {screen_flip_angle}')
+                print(f'Transformation Object: {transform_object}')
             invert(scene_item, transform_object)
             screen_flip(screen_flip_duration, screen_flip_angle)
-            revert(scene_item)
+            revert(scene_item, transform_object)
         elif reward_type == 'crazy_keys':
             if debug_mode: print(f'Crazy Keys Method: {crazy_keys_duration}')
             crazy_keys(crazy_keys_duration)
