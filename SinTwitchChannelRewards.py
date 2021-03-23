@@ -434,7 +434,7 @@ def fulfill_rewards(reward_id, redemption_id):
     data = json.dumps({
         "status": "FULFILLED"
     })
-    fulfill_request = requests.patch(uri, headers=headers, data=data).json()['data']
+    fulfill_request = requests.patch(uri, headers=headers, data=data).json()
     if debug_mode: print(f'fulfill request: {fulfill_request}')
     return fulfill_request
 
