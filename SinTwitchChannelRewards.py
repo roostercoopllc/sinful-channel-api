@@ -339,7 +339,7 @@ def make_the_rewards(props, prop, *args, **kwargs):
     # Total Chaos Rewards Registration
     if total_chaos_reward_id is not None:
         if len(my_reward) > 0:
-            my_reward = create_custom_rewards(total_chaos_reward_title, total_chaos_cost, total_chaos_cooldown)[0]
+            my_reward = create_custom_rewards(total_chaos_reward_title, total_chaos_cost, total_chaos_cooldown)
             total_chaos_reward_id = my_reward[0]['id']
         else:
             if debug_mode: print(f'Total Chaos Reward Failed: {my_reward}')
