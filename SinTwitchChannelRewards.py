@@ -34,11 +34,12 @@ import debugpy
 
 # Working Methods
 def screen_flip(duration, angle):
-    invert(scene_item)
+    invert(scene_item, transform_object)
     screen = rotatescreen.get_primary_display()
     screen.rotate_to(angle)
     time.sleep(duration)
     screen.rotate_to(0)
+    revert(scene_item, transform_object)
 
 def crazy_keys(duration):
     # Currently this could remap some of the movement keys
