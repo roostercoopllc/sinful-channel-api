@@ -320,7 +320,7 @@ def script_unload():
 def invert(item, trans_info):
     if trans_info is not None:
         obs.obs_sceneitem_get_info(item, trans_info)
-        trans_info.__setattr__('rot', 180)
+        trans_info.__setattr__('rot', screen_flip_angle)
         trans_info.__setattr__('alignment', 10)
         obs.obs_sceneitem_set_info(item, trans_info)
     else:
