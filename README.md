@@ -20,6 +20,8 @@ PS> pip install -r requirements.txt
 * The steamer will be given control of which Features to turn on/off, the channel point price per redemption 
 * All Feature durations and costs can be determined by the Streamer (or Moderators)
 * Redeemed points will be deducted from the redeeming user following a confirmation on behalf of the Streamer or moderators; points may be refunded if the redemption is declined
+* The Streamer must have a current version of OBS (Version 26.1.x or newer)
+* The Streamer must 
 
 #### Notes on usage
 * Currently, you need to have all fields filled out before "starting" the script.
@@ -42,6 +44,7 @@ PS> twitch configure -i <client-id> -s <client-secret>
 ```
 
 Grab your user Oauth token
+Below 
 ```ps1
 PS> twitch token
 PS> twitch token -u -s "channel:manage:redemptions channel:read:redemptions"
