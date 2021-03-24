@@ -26,7 +26,6 @@ req = requests.post(url, headers=headers, data=body)
 
 This made development difficult, because we didn't want any development errors to hurt his brand by "pushing straight to prod".
 
-
 The biggest challenge was to decide the workflow for how points were redeemed while on host devices. The two major user stories we were trying to decide between was:
 
 * Should the rewards be auto-redeemed via the PubSub or time query of the API
@@ -34,9 +33,9 @@ The biggest challenge was to decide the workflow for how points were redeemed wh
 
 While it would be better to allow for the streamer to give a verbal shoutout for point redemptions, making sure that the points are redeemed for the most entertainment value is paramount. Obviously, the entertainment value is increased if the streamer has to adapt to the redemption of rewards on-the-fly, so that was the route we chose.
 
-While we did not chose the latter, we understand that there are times when manual redemption control is preferred.  For example, if there is a long travel time between tasks or missions, you obviously would want the viewers to get the most chaos they could by redeeming it when the streamer gets into a more opportune position. Conversely, the streamer may be ending the stream after getting to a certain spot when the reward is redeemed, and the fan would not get the full value of the time for the chaos. It would be best to just refund the points or leave the rewards unredeemed to remain in the queue for the next stream.
+While we did not choose the latter, we understand that there are times when manual redemption control is preferred.  For example, if there is a long travel time between tasks or missions, you obviously would want the viewers to get the most chaos they could by redeeming it when the streamer gets into a more opportune position. Conversely, the streamer may be ending the stream after getting to a certain spot when the reward is redeemed, and the fan would not get the full value of the time for the chaos. It would be best to just refund the points or leave the rewards unredeemed to remain in the queue for the next stream.
 
-UPDATE: After user testing, we discovered that Twitch does not currently allow for rewards to be manually accepted by the streamer, before actually performing the reward functionality.
+Another problem we ran into was how the streamer was not able to update the rewards status programatically with the OAuth token that we generated for OBS. While we were not able to pin point the exact cause of this, when icantiemyshoe would attempt to redeem a reward, the OAuth token for OBS would not be allowed to update the status of the reward as being "Fulfilled". This was even the case when Sinfathisar would make his own reward in the dashboard and attempt to use the OBS script to redeem the reward. If the documentation on the Twitch API is valid, since none of those rewards were made with the same user token, they could not be updated as being "Fulfilled". There are some rewards the developers would like to be able to read from the queue in order to auto redeem some actions. We assumed that the PubSub was meant for rewards that "skip the queue", but ran into trouble performing this user story since asyncio and websockets had minimal support for python 3.6.
 
 However, there isn't a really good reward integration inside of OBS so we had to make it work as best as possible so it could be usable for Sinfathisar, and produce a working demo for the event.
 
