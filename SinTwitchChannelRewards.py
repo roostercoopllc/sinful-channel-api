@@ -304,6 +304,8 @@ def script_save(settings):
 
 def script_load(settings):
     global debug_mode
+    global LIVE
+    LIVE = False
     if debug_mode: print("[TS] Loaded script.")
     if len(oauth_token) > 0 and len(client_id) > 0:
         # obs.timer_add(set_twitch, check_frequency * check_frequency_to_millisec)
