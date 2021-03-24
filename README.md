@@ -5,7 +5,7 @@ This repository houses the Submission for the https://twitchchannelpoints.devpos
 The full competition submission can be found here: https://devpost.com/software/ti-esrever-dna-ti-pilf-nwod-gnaht-ym-tup-i
 
 ### Requirements 
-* OBS Studios
+* OBS Studios Version 26.x.x or newer
 * Python 3.6
 * Twitch CLI - https://github.com/twitchdev/twitch-cli/blob/main/docs/token.md
 * Twitch Affiliate or Partner status
