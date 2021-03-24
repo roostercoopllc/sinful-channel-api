@@ -313,6 +313,7 @@ def script_unload():
     global debug_mode
     global LIVE
     LIVE = False
+    revert(scene_item, transform_object)
     if debug_mode: print("[TS] Unloaded script.")
 
 # OBS Sources Formatting
