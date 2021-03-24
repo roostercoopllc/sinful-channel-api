@@ -50,6 +50,8 @@ While it would be better to allow for the streamer to give a verbal shoutout for
 
 While we did not chose the latter, we understand that there are times when manual redemption control is preferred.  For example, if there is a long travel time between tasks or missions, you obviously would want the subscribers to get the most chaos they could by redeeming it when the streamer gets into a more opportune position. Conversely, the streamer may be ending the stream after getting to a certain spot when the reward is redeemed, and the fan would not get the full value of the time for the chaos. It would be best to just refund the points or leave the rewards unredeemed to remain in the queue for the next stream.
 
+UPDATE: After user testing, we discovered that Twitch does not currently allow for rewards to be manually accepted by the streamer, before actually performing the reward functionality.
+
 However, there isn't a really good reward integration inside of OBS so we had to make it work as best as possible so it could be usable for Sinfathisar, and produce a working demo for the event.
 
 ## Accomplishments that we're proud of
