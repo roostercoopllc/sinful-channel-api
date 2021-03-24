@@ -23,10 +23,10 @@ PS> pip install -r requirements.txt
 * The Streamer must have a current version of OBS (Version 26.1.x or newer)
 * The Streamer must 
 
-#### Notes on usage
-* Currently, you need to have all fields filled out before "starting" the script.
-* Once all fields are completed, you can hit the "Update the Script" Button. This will create the rewards if they have not previously been created, and will update the rewards if they were previously created.
-* You must hit the "Stop Tracking Rewards" button before closing OBS since we are running a subprocess outside of OBS and will orphan the process if it is not killed via that button or the task manager. 
+#### Notes On Usage
+* Currently, you need to have all fields marked "Required" (*) filled out before "applying" the script.  To apply the script, click the "Update the Rewards" button.
+* Clicking "Update the Rewards" will create the rewards if they have not previously been created on your Twitch dashbard.  In order to submit field updates, you need to update the rewards ID fields for each Twitch reward.  One easy way to find the reward ID's is to enable debug mode, and copy the ID's from the debug logs.  Once the ID fields have been populated, you can use the "Update The Rewards" button to update the rewards' respective information.
+* You must uncheck "Update Rewards" button before closing OBS since we are running a subprocess outside of OBS and will orphan the process if it is not killed via that button or the task manager. 
 * If other problems occur, enable debug mode and view the script logs.
 
 ## Features
