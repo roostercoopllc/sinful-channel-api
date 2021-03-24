@@ -148,7 +148,7 @@ def script_defaults(settings):
     obs.obs_data_set_default_int(settings, "total_chaos_cooldown", total_chaos_cooldown)
 
 def script_description():
-    return "<b>Redeem rewards from twich channel</b>" + \
+    return "<b>Redeem Rewards From Twitch Channel</b>" + \
     "<hr/>" + \
     "Create your Client-ID here:<br/><a href=\"https://dev.twitch.tv/console/apps/create\">Twitch Dev</a>"
 
