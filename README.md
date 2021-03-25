@@ -27,7 +27,7 @@ PS> pip install -r requirements.txt
 * Clicking **"Update the Rewards"** will create the rewards if they have not previously been created on your Twitch dashbard.  
   * In order to submit field updates, you need to update the rewards ID fields for each Twitch reward.  
   * One easy way to find the reward IDs is to enable debug mode, and copy the IDs from the debug logs.  Once the ID fields have been populated, you can use the **"Update The Rewards"** button to update the rewards' respective information.
-* Although the redemptions will populate within your Channel Points (https://dashboard.twitch.tv/u/<yourusername>/viewer-rewards/channel-points) all modifications for screen flips, key modifications or Total Chaos **MUST** occur within the OBS dialog.
+* Although the redemptions will populate within your Channel Points (https://dashboard.twitch.tv/u/your_user_name/viewer-rewards/channel-points) all modifications for screen flips, key modifications or Total Chaos **MUST** occur within the OBS dialog.
 * **NOTE:** ***You must uncheck "Redeem Rewards" checkbox before closing OBS since we are running a subprocess outside of OBS and will orphan the process if it is not killed via that button or the task manager. (We think we fixed it, but sometimes it doesn't immediately die).***
   * If other problems occur, enable debug mode and view the script logs.
 
@@ -40,7 +40,7 @@ PS> pip install -r requirements.txt
 1. Create an application
 
 * Go to the Twitch Developer console (https://dev.twitch.tv/console/apps)
-* Click on **"Register Your Application"
+* Click on **"Register Your Application"**
   * Provide a name for your Application
   * Enter http://localhost:3000 as your OAuth Redirect URL and click **"Add"** to submit this Redirect URL
   * Select a category that best fits your Application and click **"Create"**
@@ -70,7 +70,7 @@ PS> twitch token -u -s "channel:manage:redemptions channel:read:redemptions"
 ## Adding the Python Script to OBS
 1. Open OBS and locate your Python installation file
 * Click on **Tools > Scripts** 
-* Click on the **"Python Settings"** tab and **"Browse"** to locate the installation path for your Python version 3.6 -- This may default to exist within your Local AppData folder  - %AppData/Local/Programs/Python
+* Click on the **"Python Settings"** tab and **"Browse"** to locate the installation path for your Python version 3.6 -- This may default to exist within your Local AppData folder  - ***%AppData/Local/Programs/Python***
 
 2. Load a new Python Script
 * On the **Tools > Scripts** menu, click on the **"Scripts"** tab and the "+" in the bottom left of the screen to browse for your channel rewards Python script (.py)
@@ -90,26 +90,26 @@ PS> twitch token -u -s "channel:manage:redemptions channel:read:redemptions"
 # Expires At: 2021-03-15 17:53:58.4239375 +0000 UTC
 # Scopes: [channel:manage:redemptions channel:read:redemptions]
 ```
-4. Provide the Scene name OBS will be referencing **Case Sensitive**
-5. Provide the Source Name to be modified **Case Sensitive** -- This is what allows the screen flips to be seen viewers and not just the Streamer
+4. Provide the Scene name OBS will be referencing -- **This is Case Sensitive**
+5. Provide the Source Name to be modified -- **This is Case Sensitive** -- This is what allows the screen flips to be seen viewers and not just the Streamer
 6. Populate values for your Rewards *(excluding the Rewards ID when you first create your Rewards)*
 7. Click **"Update the reward values"** button -- This will populate these newly created Rewards within your Twitch Channel Points and create an ID for your Rewards
 8. OPTIONAL: Provide Rewards IDs for the newly created Rewards
 * To generate an ID
   * Open the Scripts dialog -- **Tools > Scripts**
-  * Scroll to the bottom of the redemption options list (right side of the **Scripts** tab) and turn on **"Debug Mode"**
-  * Click the refresh arrows (two arrows on the bottom left of the **Scripts** tab)
+  * Scroll to the bottom of the redemption options list (right side of the **"Scripts"** tab) and turn on **"Debug Mode"**
+  * Click the refresh arrows (two arrows on the bottom left of the **"Scripts"** tab)
   * Open the "**Script Log"** and locate your Reward IDs 
  
  ## Allowing Redemptions to occur
  1. Open the Scripts dialog -- **Tools > Scripts**
  2. Click on the **"Scripts"** tab
- 3. Scroll to the bottom of the redemption options list (right side of the **Scripts** tab) and turn ***ON*** **"Redeem Rewards"** -- This will now begin the python script's process of looking for rewards within the Rewards Redemption queue on Twitch. 
+ 3. Scroll to the bottom of the redemption options list (right side of the **"Scripts"** tab) and turn ***ON*** **"Redeem Rewards"** -- This will now begin the python script's process of looking for rewards within the Rewards Redemption queue on Twitch. 
  
  ## Stopping Rewards Redemptions
  1. Open the Scripts dialog -- **Tools > Scripts**
  2. Click on the **"Scripts"** tab
- 3. Scroll to the bottom of the redemption options list (right side of the **Scripts** tab) and turn ***OFF*** **"Redeem Rewards"** -- This will stop the python script's process of looking for rewards within the Rewards Redemption queue on Twitch.
+ 3. Scroll to the bottom of the redemption options list (right side of the **"Scripts"** tab) and turn ***OFF*** **"Redeem Rewards"** -- This will stop the python script's process of looking for rewards within the Rewards Redemption queue on Twitch.
  
  ## Team 
 - Team Captain: sinfathisar19
